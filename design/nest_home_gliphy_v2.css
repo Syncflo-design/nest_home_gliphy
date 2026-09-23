@@ -1,0 +1,340 @@
+/* ===========================================================================
+   nest_home_gliphy v2 — look-and-feel mockup stylesheet.
+
+   Static mockup. Every colour is a semantic token, so the shipping version of
+   this file drops into nest_home_gliphy/public/css/ and reads nest_theme's palette
+   vars in place of the literals below.
+
+   Deliberately NOT fuse_theme: no gradient banner, no top-rule strips, no one
+   uniform grid. Solid ink header, bento tile sizing, accent rail on the LEFT.
+
+   Pass 2 (ui-ux-pro-max): Data-Dense Dashboard pattern. Modular type scale,
+   4/8 spacing rhythm, visible focus rings, reduced-motion, tabular figures,
+   overdue marked by glyph as well as colour.
+   =========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;600&family=Fira+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  /* -- Surfaces + ink --------------------------------------------------- */
+  --ink: #0F172A;
+  --canvas: #EEF2F7;
+  --card: #FFFFFF;
+  --line: #E2E8F0;
+  --text: #0F172A;
+  --muted: #5B6676;          /* 4.5:1 on --canvas */
+
+  /* -- Semantic accents -------------------------------------------------- */
+  --primary: #1E40AF;        --primary-soft: #E3EAFB;
+  --amber: #B45309;          --amber-soft: #FBF0E2;
+  --teal: #0F766E;           --teal-soft: #DCF2EF;
+  --danger: #B91C1C;         --danger-soft: #FBE9E9;
+
+  /* -- Scale ------------------------------------------------------------- */
+  --fs-xs: 11px;  --fs-sm: 12px;  --fs-md: 13px;
+  --fs-lg: 14px;  --fs-xl: 16px;  --fs-2xl: 20px; --fs-3xl: 28px;
+
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px;
+  --s-4: 16px; --s-6: 24px; --s-8: 32px; --s-10: 40px;
+
+  --r-sm: 8px; --r: 12px; --r-lg: 16px;
+
+  --e1: 0 1px 2px rgba(15, 23, 42, .06);
+  --e2: 0 8px 24px rgba(15, 23, 42, .10);
+
+  --t: 180ms cubic-bezier(.2, .6, .3, 1);
+
+  --font: "Fira Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:root[data-scheme="dark"] {
+  --ink: #0B1220;
+  --canvas: #0B0F17;
+  --card: #141B26;
+  --line: #26303F;
+  --text: #E6EBF2;
+  --muted: #94A3B8;
+
+  /* Desaturated tonal variants, not inverted hues - contrast re-checked
+     against --card rather than assumed from the light values. */
+  --primary: #93B4F5;        --primary-soft: #17243B;
+  --amber: #E3A857;          --amber-soft: #2B2213;
+  --teal: #5EC5B4;           --teal-soft: #10262A;
+  --danger: #F08A8A;         --danger-soft: #2C1618;
+
+  --e1: 0 1px 2px rgba(0, 0, 0, .40);
+  --e2: 0 8px 24px rgba(0, 0, 0, .50);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: var(--s-6);
+  background: var(--canvas);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--fs-lg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.nh { max-width: 1440px; margin: 0 auto; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Every interactive element gets the same ring. Never removed. */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* -- Header: a solid ink slab. No gradient - that is fuse's signature. ---- */
+
+.nh-bar {
+  display: flex; align-items: center; gap: var(--s-4); flex-wrap: wrap;
+  background: var(--ink); color: #fff;
+  border-radius: var(--r-lg); padding: var(--s-4) var(--s-6);
+  margin-bottom: var(--s-6);
+  position: relative; overflow: hidden;
+}
+
+/* One hairline of accent along the top edge - the only ornament on the bar. */
+.nh-bar::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: linear-gradient(90deg, #2563EB 0%, #0F766E 50%, #D97706 100%);
+}
+
+.nh-bar :focus-visible { outline-color: #fff; }
+
+.nh-mark {
+  width: 40px; height: 40px; flex: 0 0 auto; border-radius: var(--r);
+  background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.20);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: var(--fs-xl); letter-spacing: -.02em;
+}
+
+.nh-bar-titles { flex: 1 1 240px; min-width: 0; }
+.nh-bar-title { font-size: var(--fs-2xl); font-weight: 600; letter-spacing: -.01em; line-height: 1.25; }
+.nh-bar-sub { font-size: var(--fs-md); color: rgba(255,255,255,.76); margin-top: 2px; }
+
+.nh-roles { display: flex; gap: var(--s-1); flex-wrap: wrap; margin-top: var(--s-2); }
+.nh-role {
+  font-size: var(--fs-xs); font-weight: 500; letter-spacing: .06em; text-transform: uppercase;
+  padding: 3px var(--s-2); border-radius: 999px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.20);
+  color: rgba(255,255,255,.92);
+}
+
+.nh-clock { text-align: right; flex: 0 0 auto; line-height: 1.2; }
+.nh-time {
+  font-family: var(--font-mono);
+  font-size: var(--fs-3xl); font-weight: 500;
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em;
+}
+.nh-date { font-size: var(--fs-sm); color: rgba(255,255,255,.72); margin-top: 2px; }
+
+.nh-acts { display: flex; gap: var(--s-2); flex: 0 0 auto; }
+.nh-ico {
+  /* 44x44 - the platform minimum, not the 34px the icon needs. */
+  width: 44px; height: 44px; border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.20);
+  color: #fff; cursor: pointer; transition: background var(--t);
+}
+.nh-ico:hover { background: rgba(255,255,255,.22); }
+.nh-ico svg { width: 18px; height: 18px; }
+
+/* -- Band headings ------------------------------------------------------- */
+
+.nh-band { display: flex; align-items: center; gap: var(--s-3); margin: 0 0 var(--s-3); }
+.nh-band h2 {
+  margin: 0; font-size: var(--fs-xs); font-weight: 700; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--muted); white-space: nowrap;
+}
+.nh-band .rule { flex: 1; height: 1px; background: var(--line); }
+.nh-band .n {
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+  font-size: var(--fs-xs); font-weight: 600; color: var(--muted);
+  background: var(--line); border-radius: 999px; padding: 2px var(--s-2);
+}
+
+/* -- Bento tile grid: four columns, primaries span two. ------------------ */
+
+.nh-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-3); margin-bottom: var(--s-8);
+}
+
+.tile {
+  position: relative; display: flex; gap: var(--s-3); align-items: flex-start;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+  box-shadow: var(--e1);
+  padding: var(--s-4) var(--s-4) var(--s-4) var(--s-6);
+  min-height: 44px; cursor: pointer; text-align: left;
+  font-family: inherit; color: inherit;
+  transition: transform var(--t), box-shadow var(--t), border-color var(--t);
+  overflow: hidden;
+}
+
+/* The accent is a LEFT rail, not a top rule - fuse uses the top edge. */
+.tile::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: var(--tint, var(--primary));
+  transition: width var(--t);
+}
+.tile:hover { transform: translateY(-2px); box-shadow: var(--e2); border-color: var(--tint, var(--primary)); }
+.tile:hover::before { width: 6px; }
+.tile:active { transform: translateY(0); }
+
+.tile--lg { grid-column: span 2; }
+
+.tile-ico {
+  flex: 0 0 auto; width: 40px; height: 40px; border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--tint-soft, var(--primary-soft)); color: var(--tint, var(--primary));
+}
+.tile-ico svg { width: 20px; height: 20px; }
+
+.tile-body { min-width: 0; flex: 1; }
+.tile-label { font-size: var(--fs-lg); font-weight: 600; line-height: 1.35; }
+.tile-blurb { font-size: var(--fs-sm); color: var(--muted); line-height: 1.45; margin-top: 2px; }
+
+.tile--sm { padding-top: var(--s-3); padding-bottom: var(--s-3); align-items: center; }
+.tile--sm .tile-blurb { display: none; }
+.tile--sm .tile-ico { width: 36px; height: 36px; }
+.tile--sm .tile-ico svg { width: 18px; height: 18px; }
+
+.chev { margin-left: auto; align-self: center; color: var(--muted); flex: 0 0 auto; opacity: .6; }
+.chev svg { width: 16px; height: 16px; }
+
+.t-primary { --tint: var(--primary); --tint-soft: var(--primary-soft); }
+.t-teal    { --tint: var(--teal);    --tint-soft: var(--teal-soft); }
+.t-amber   { --tint: var(--amber);   --tint-soft: var(--amber-soft); }
+.t-danger  { --tint: var(--danger);  --tint-soft: var(--danger-soft); }
+
+/* -- Attention lists: three flush columns. ------------------------------- */
+
+.nh-lists { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-3); }
+
+.lst {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+  box-shadow: var(--e1); display: flex; flex-direction: column; overflow: hidden;
+}
+.lst-head {
+  display: flex; align-items: center; gap: var(--s-2);
+  padding: var(--s-3) var(--s-4); border-bottom: 1px solid var(--line);
+}
+.lst-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tint, var(--primary)); flex: 0 0 auto; }
+.lst-title { font-size: var(--fs-lg); font-weight: 600; line-height: 1.3; }
+.lst-sub { font-size: var(--fs-xs); color: var(--muted); }
+.lst-count {
+  margin-left: auto; min-width: 26px; height: 24px; padding: 0 var(--s-2); border-radius: 999px;
+  background: var(--tint-soft, var(--primary-soft)); color: var(--tint, var(--primary));
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+  font-size: var(--fs-sm); font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+.lst-count.zero { background: var(--line); color: var(--muted); }
+.lst-body { padding: var(--s-1); max-height: 320px; overflow: auto; }
+
+.row {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-2) var(--s-3); min-height: 44px;
+  border-radius: var(--r-sm); cursor: pointer;
+  transition: background var(--t);
+}
+.row:hover { background: var(--primary-soft); }
+.row + .row { border-top: 1px solid var(--line); }
+.row-main { flex: 1; min-width: 0; }
+.row-title { font-size: var(--fs-md); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row-sub { font-size: var(--fs-xs); color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.due {
+  display: inline-flex; align-items: center; gap: var(--s-1);
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+  font-size: var(--fs-sm); font-weight: 500; color: var(--muted); white-space: nowrap;
+}
+/* Overdue carries a glyph as well as the colour - colour alone is not a signal. */
+.due.over { color: var(--danger); font-weight: 600; }
+.due svg { width: 13px; height: 13px; }
+
+.empty { padding: var(--s-8) var(--s-4); text-align: center; color: var(--muted); }
+.empty-mark {
+  width: 40px; height: 40px; border-radius: 50%; margin: 0 auto var(--s-2);
+  background: var(--teal-soft); color: var(--teal);
+  display: flex; align-items: center; justify-content: center;
+}
+.empty-mark svg { width: 20px; height: 20px; }
+.empty-t { font-size: var(--fs-md); font-weight: 600; color: var(--text); }
+.empty-m { font-size: var(--fs-sm); margin-top: 2px; }
+
+/* -- Loading: reserve the space rather than collapse it. ----------------- */
+
+.skel {
+  border-radius: var(--r); border: 1px solid var(--line);
+  background: linear-gradient(90deg, var(--card) 0%, var(--line) 50%, var(--card) 100%);
+  background-size: 200% 100%; animation: nh-shimmer 1.3s ease-in-out infinite;
+}
+.skel--tile { height: 72px; }
+@keyframes nh-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* -- Footer -------------------------------------------------------------- */
+
+.nh-foot {
+  display: flex; align-items: center; justify-content: center; gap: var(--s-2);
+  margin-top: var(--s-8); padding-top: var(--s-4); border-top: 1px solid var(--line);
+  color: var(--muted); font-size: var(--fs-sm);
+}
+.nh-foot b { color: var(--text); font-weight: 600; }
+
+/* -- Mockup-only scheme switch (does not ship) --------------------------- */
+
+.sw {
+  position: fixed; right: var(--s-4); bottom: var(--s-4); z-index: 40;
+  display: flex; gap: var(--s-1); background: var(--card);
+  border: 1px solid var(--line); border-radius: 999px; padding: var(--s-1);
+  box-shadow: var(--e2);
+}
+.sw button {
+  border: 0; background: transparent; color: var(--muted);
+  font: inherit; font-size: var(--fs-sm); font-weight: 500;
+  padding: var(--s-1) var(--s-3); border-radius: 999px; cursor: pointer;
+}
+.sw button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+
+/* -- Responsive: 1440 / 1024 / 768 / 375 --------------------------------- */
+
+@media (max-width: 1024px) {
+  .nh-grid { grid-template-columns: repeat(2, 1fr); }
+  .nh-lists { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  body { padding: var(--s-4); }
+  .nh-grid { grid-template-columns: 1fr; }
+  .tile--lg { grid-column: span 1; }
+  .nh-clock { text-align: left; }
+}
+
+@media (max-width: 375px) {
+  body { padding: var(--s-3); }
+  .nh-bar { padding: var(--s-4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .tile:hover { transform: none; }
+}

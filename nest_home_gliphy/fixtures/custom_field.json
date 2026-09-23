@@ -1,0 +1,25 @@
+[
+ {
+  "doctype": "Custom Field",
+  "name": "User-nest_home_gliphy_section",
+  "dt": "User",
+  "fieldname": "nest_home_gliphy_section",
+  "label": "Nest Home Gliphy",
+  "fieldtype": "Section Break",
+  "insert_after": "desk_theme",
+  "collapsible": 1,
+  "module": "Nest Home Gliphy"
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "User-preferred_landing_page",
+  "dt": "User",
+  "fieldname": "preferred_landing_page",
+  "label": "Preferred Landing Page",
+  "fieldtype": "Select",
+  "options": "\nNest Home Gliphy\nCRM Mobile\nMy Activities\nStandard Desk",
+  "description": "Where you land after login. Blank uses your role default. Honoured only if the administrator allows overrides (Nest Home Gliphy Settings).",
+  "insert_after": "nest_home_gliphy_section",
+  "module": "Nest Home Gliphy"
+ }
+]

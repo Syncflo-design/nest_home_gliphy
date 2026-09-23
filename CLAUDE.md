@@ -1,0 +1,124 @@
+# nest_home_gliphy — Claude session notes
+
+A reusable **NestERP standard** Frappe v16 app: a role-based, branded landing
+page built on *push, not pull* — the user's work is on screen at login.
+
+> Built on the same desk-Page bundle pattern as `nest_crm_mobile` /
+> `nest_crm_tasks`. Before touching `.js` / `.html` / `.json` in
+> `nest_home_gliphy/nest_home_gliphy/page/nest_home_gliphy/`, re-read these CoWork_Helper gotchas:
+> `2026-05-10-frappe-v16-page-api-drift.md` (mount in `page.body`, it is jQuery),
+> `2026-05-11-*listview*` (build Pages, not listview hooks),
+> `2026-05-13-frappe-whitelisted-action-needs-return-value.md` (return truthy),
+> `2026-05-17-cowork-write-tool-silent-truncation.md` (write big files via bash
+> heredoc; verify with `wc -c` / `node --check`).
+
+## The five non-negotiables (page-bundle pattern)
+
+1. Page HTML is assembled in `nest_home_gliphy.js` as a **string array joined with
+   `\n`**, not a backtick template literal.
+2. `nest_home_gliphy.html` is a **placeholder only** (`<div id="nest-home-gliphy-placeholder">`)
+   — no apostrophes (Frappe registers it as a single-quoted template).
+3. The controller is reachable as `window.nestHomeGliphy` (class instance), mounted
+   into `page.body` via `$('<div>').appendTo(page.body)` — never
+   `$(wrapper).find('.x')`.
+4. Deploy cycle: push → Frappe Cloud Bench → **Pull Updates** → Deploy →
+   incognito reload. Bump `BUILD_MARKER` (in `nest_home_gliphy.js`) and `__version__`
+   each deploy.
+5. CSS lives in a **separate file** (`public/css/nest_home_gliphy.css`) loaded via a
+   `<link>` from the page JS — keeps JS under the ~20KB Cowork write cap.
+
+## Architecture
+
+- **Attention engine** (`nest_home_gliphy/api.py` + `attention/`): one whitelisted
+  `get_attention(categories)` that aggregates pluggable sources and normalises
+  every item to ONE schema (`attention/schema.py::make_item`). New source =
+  new function returning that shape; the page never changes.
+  - List A / C: `attention/sources/todos.py` (ToDo table, different filters).
+  - List B: `attention/sources/awaiting.py` — **rules table** `AWAITING_RULES`.
+    v1 rule = Draft (docstatus 0) docs the user can submit, for Sales Order /
+    Purchase Order / Work Order. Add a doctype = append a rule dict.
+- **Item schema (keystone):** `list_category, title, subtitle, deep_link
+  (frappe.set_route args array), source_doctype, source_name, priority, date,
+  age_days, owner_or_party, status, meta`.
+- **Page** paints List A first (`get_attention(["A"])`), then B/C behind it.
+  Freshness v1 = load + manual Refresh + quiet 2-min visible-tab poll. Live
+  socket push is phase 2 (see realtime-timing gotcha).
+- **Doctypes:** `Nest Home Gliphy Settings` (Single — default landing, allow override,
+  brand logo, per-role list map child table) and `Nest Home Gliphy Tile` (data-driven
+  quick-launch; admins add a tile by creating a record).
+- **Branding:** `Nest Home Gliphy Settings.brand_logo` wins, else `nest_theme`'s
+  `Nest Theme Settings.customer_logo`; CSS reuses nest_theme palette vars.
+- **Landing resolution** (`boot.py`): user preference → role default → app
+  default, via the `get_website_user_home_page` hook. Per-user *workspace* API
+  is blocked (gotcha 2026-05-07) so we use the home-page hook, not workspaces.
+
+## Open item to verify on first deploy
+
+Does v16 consult `get_website_user_home_page` for **desk** users (not just
+portal)? If not, the per-user override needs a small boot-time redirect shim;
+role_home_page still covers managers. Record the answer here after smoke test.
+
+## Repo / site
+
+- GitHub: `Syncflo-design/nest_home_gliphy` (org for NestERP apps)
+- Site: `Syncflo_internal_V16` — route `/desk/nest-home-gliphy`
+- Module: `Nest Home Gliphy`
+
+## v0.0.2 — 2026-05-20 (staged, deploy pending)
+
+- **List A/C party enrichment** (`attention/sources/todos.py`): Lead/Customer-
+  linked ToDos now resolve to the party's real name (Lead → "name — company",
+  Customer → customer_name) and the row deep-links to the **Party Activity Hub**
+  (`party-activity/<type>/<name>`) if nest_crm_tasks is installed, else the
+  Lead/Customer record. One batched lookup per doctype, run as the session user
+  (names resolve only if readable). Driven by presales need: My Activities tied
+  to leads + customers is the primary signal.
+- **List B rules expanded** (`attention/sources/awaiting.py` `AWAITING_RULES`):
+  added **Supplier Invoice (Purchase Invoice)** and **Quotation** alongside
+  Sales Order / Purchase Order / Work Order. Each still gated by submit perm, so
+  users only see what they can act on.
+- BUILD_MARKER → `v0.0.2-2026-05-20-list-a-parties`; `__version__` → 0.0.2.
+
+## v0.0.6 — 2026-05-21 (staged, deploy pending)
+
+- **Scripted role-profile views** (`defaults.py::ensure_layout_for_profile`): one
+  idempotent call creates/updates the Nest Home Gliphy Layout for a Role Profile and
+  wires its buttons. Tiles are given as existing names/labels (reused) or dicts
+  (`label`+`route` required) which are created in the shared library via
+  `_ensure_tile` (matched by label, so re-runs never duplicate). `replace_tiles`
+  rewrites vs. appends; `lists` picks A/B/C. New `_resolve_tile_spec` does the
+  name/label/dict → tile-name resolution.
+- **Admin entrypoint** (`api.py::build_profile_view`): `@frappe.whitelist()`,
+  `frappe.only_for("System Manager")`, JSON-coerces `tiles`/`lists`, returns a
+  truthy payload (gotcha 2026-05-13). Lets a view be compiled from console/patch/
+  tool call without a code deploy.
+- No page-bundle change, so BUILD_MARKER is unchanged; `__version__` → 0.0.6.
+- Resolution model confirmed as the intended **hybrid**: Role Profile match wins,
+  then Role, else fall through to `Nest Home Gliphy Settings.default_landing` (Standard
+  Desk) — see `api.py::resolve_layout` + `boot.py::_resolve_landing`.
+- Data (live, via MCP, not in this repo): created PreSales layout (Role Profile =
+  PreSales) with tiles CRM/Leads/Customers/New Sales Invoice/New Supplier Invoice
+  (`NEST-TILE-0007..0011`); fixed the `NEST-TILE-` series counter (was stuck at 1
+  → set to 6) so future tile inserts don't collide.
+
+## v0.0.17 — 2026-07-24 (staged, deploy pending): permanent POS price safety-net
+
+- **`nest_home_gliphy/pos_pricing.py`** + `hooks.override_whitelisted_methods`: wraps the
+  POS `erpnext...point_of_sale.get_items`. Any item returned with **no selling
+  price on the active price list gets a persisted `0.01` sentinel Item Price**,
+  created inline (on item load, only for items actually shown — no mass backfill),
+  so the till can NEVER block on "Price is not set for the item" again.
+- **0.01 is deliberate**: never a plausible price, glaringly obvious on the
+  receipt, and the exact-`0.01` rate is the worklist marker — `Item Price` filtered
+  to `price_list_rate = 0.01` = every item still needing a real price. Nothing else
+  prices at 1 cent.
+- **Universal & permanent** (all companies/profiles), per Russell's call. Trade-off
+  he accepted: a genuinely unpriced item in a live store could ring up at R0.01 if a
+  cashier ignores the obvious cent — the visible-wrongness IS the safeguard.
+- Bulletproofed: any exception in the wrapper logs and returns erpnext's own
+  result; `**kwargs` absorbs future signature drift; `insert(ignore_permissions)`.
+- Prompted by Ardmore UAT: Online Store Test POS blocked on the FABCB* swatches
+  (no price on `Ardmore Ceramics TEST - Retail`). Those 4 were given real R10 test
+  prices; this override stops it recurring for anything else.
+- **Deploy**: bundles with the pending `nest_help` v0.0.2 POS-crash shim. Push →
+  Frappe Cloud bench `Ardmore_KZN` → Pull Updates → **fresh Deploy** (asset+code).

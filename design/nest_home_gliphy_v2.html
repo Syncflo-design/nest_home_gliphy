@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en" data-scheme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nest Home Gliphy v2</title>
+<link rel="stylesheet" href="nest_home_gliphy_v2.css">
+</head>
+<body>
+<div class="nh">
+
+  <h1 class="sr-only">Nest Home Gliphy &mdash; Ardmore Ceramics</h1>
+
+  <header class="nh-bar">
+    <div class="nh-mark" aria-hidden="true">N</div>
+    <div class="nh-bar-titles">
+      <div class="nh-bar-title">Ardmore Ceramics</div>
+      <div class="nh-bar-sub">Good morning, Russell &mdash; Wednesday, 23 September</div>
+      <div class="nh-roles">
+        <span class="nh-role">Stock Controller</span>
+        <span class="nh-role">Accounts User</span>
+        <span class="nh-role">Sales User</span>
+      </div>
+    </div>
+    <div class="nh-clock">
+      <div class="nh-time">08:42</div>
+      <div class="nh-date">23 Sep 2026</div>
+    </div>
+    <div class="nh-acts">
+      <button type="button" class="nh-ico" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      </button>
+      <button type="button" class="nh-ico" aria-label="Refresh">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="nh-band"><h2>Do now</h2><div class="rule"></div><span class="n">4</span></div>
+  <div class="nh-grid">
+
+    <button type="button" class="tile tile--lg t-primary">
+      <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span>
+      <span class="tile-body"><span class="tile-label">Point of Sale</span><span class="tile-blurb">Open the till and take a sale</span></span>
+      <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+    </button>
+
+    <button type="button" class="tile tile--lg t-teal">
+      <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8l-9-5-9 5v8l9 5 9-5z"/><path d="M3.3 7.3L12 12l8.7-4.7M12 12v9"/></svg></span>
+      <span class="tile-body"><span class="tile-label">Warehouse Transfer</span><span class="tile-blurb">Move stock between warehouses</span></span>
+      <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+    </button>
+
+    <button type="button" class="tile tile--sm t-amber">
+      <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+      <span class="tile-body"><span class="tile-label">New Sales Invoice</span></span>
+      <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+    </button>
+
+    <button type="button" class="tile tile--sm t-primary">
+      <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg></span>
+      <span class="tile-body"><span class="tile-label">Stock Count</span></span>
+      <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+    </button>
+
+  </div>
+
+  <div class="nh-band"><h2>Look up</h2><div class="rule"></div><span class="n">4</span></div>
+  <div class="nh-grid">
+
+    <button type="button" class="tile tile--sm t-primary">
+      <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      <span class="tile-body"><span class="tile-label">Customers</span></span>
+      <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+    </button>
+
+    <button type="button" class="tile tile--sm t-primary">
+      <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+      <span class="tile-body"><span class="tile-label">Items</span></span>
+      <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+    </button>
+
+    <button type="button" class="tile tile--sm t-teal">
+      <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></span>
+      <span class="tile-body"><span class="tile-label">Stock Ledger</span></span>
+      <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+    </button>
+
+    <button type="button" class="tile tile--sm t-amber">
+      <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+      <span class="tile-body"><span class="tile-label">Guides</span></span>
+      <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+    </button>
+
+  </div>
+
+  <div class="nh-band"><h2>Needs your attention</h2><div class="rule"></div></div>
+  <div class="nh-lists">
+
+    <section class="lst t-primary" aria-label="My Activities">
+      <div class="lst-head">
+        <span class="lst-dot" aria-hidden="true"></span>
+        <div><div class="lst-title">My Activities</div><div class="lst-sub">Do these</div></div>
+        <span class="lst-count">6</span>
+      </div>
+      <div class="lst-body">
+        <div class="row" tabindex="0"><div class="row-main"><div class="row-title">Bright Star Trading</div><div class="row-sub">Call back re: glaze order</div></div><span class="due over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>18 Sep</span></div>
+        <div class="row" tabindex="0"><div class="row-main"><div class="row-title">Kirsten Meyer</div><div class="row-sub">Send revised quotation</div></div><span class="due over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>21 Sep</span></div>
+        <div class="row" tabindex="0"><div class="row-main"><div class="row-title">Umhlanga Gallery</div><div class="row-sub">Confirm delivery slot</div></div><span class="due">23 Sep</span></div>
+        <div class="row" tabindex="0"><div class="row-main"><div class="row-title">Delta Interiors</div><div class="row-sub">Chase proof of payment</div></div><span class="due">25 Sep</span></div>
+        <div class="row" tabindex="0"><div class="row-main"><div class="row-title">Arbor Care</div><div class="row-sub">Renewal discussion</div></div><span class="due">01 Oct</span></div>
+        <div class="row" tabindex="0"><div class="row-main"><div class="row-title">Sandton Studio</div><div class="row-sub">Site measure</div></div><span class="due">03 Oct</span></div>
+      </div>
+    </section>
+
+    <section class="lst t-amber" aria-label="Awaiting My Action">
+      <div class="lst-head">
+        <span class="lst-dot" aria-hidden="true"></span>
+        <div><div class="lst-title">Awaiting My Action</div><div class="lst-sub">Your call</div></div>
+        <span class="lst-count">3</span>
+      </div>
+      <div class="lst-body">
+        <div class="row" tabindex="0"><div class="row-main"><div class="row-title">PUR-ORD-2026-00412</div><div class="row-sub">Purchase Order &middot; Draft &middot; R 48 200</div></div><span class="due">22 Sep</span></div>
+        <div class="row" tabindex="0"><div class="row-main"><div class="row-title">SAL-ORD-2026-01188</div><div class="row-sub">Sales Order &middot; Draft &middot; R 12 640</div></div><span class="due">23 Sep</span></div>
+        <div class="row" tabindex="0"><div class="row-main"><div class="row-title">MFG-WO-2026-0077</div><div class="row-sub">Work Order &middot; Draft &middot; 240 units</div></div><span class="due">24 Sep</span></div>
+      </div>
+    </section>
+
+    <section class="lst t-teal" aria-label="Waiting On Others">
+      <div class="lst-head">
+        <span class="lst-dot" aria-hidden="true"></span>
+        <div><div class="lst-title">Waiting On Others</div><div class="lst-sub">Chase these</div></div>
+        <span class="lst-count zero">0</span>
+      </div>
+      <div class="lst-body">
+        <div class="empty">
+          <div class="empty-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="empty-t">Nothing outstanding</div>
+          <div class="empty-m">No one owes you anything right now.</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="nh-foot">Powered by <b>NestERP</b></div>
+</div>
+
+<div class="sw">
+  <button type="button" data-s="light" aria-pressed="true">Light</button>
+  <button type="button" data-s="dark" aria-pressed="false">Dark</button>
+</div>
+
+<script>
+document.querySelectorAll(".sw button").forEach(function (b) {
+  b.addEventListener("click", function () {
+    document.documentElement.setAttribute("data-scheme", b.dataset.s);
+    document.querySelectorAll(".sw button").forEach(function (x) {
+      x.setAttribute("aria-pressed", String(x === b));
+    });
+  });
+});
+</script>
+</body>
+</html>

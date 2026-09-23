@@ -1,0 +1,220 @@
+/* nest_home_gliphy landing page — aligns to nest_theme palette tokens (var fallbacks
+   keep it sane if nest_theme is not installed). Professional, card-driven.
+   v0.0.3: horizontal layout — narrow left button column, lists fill the rest. */
+
+.nh-app {
+  --nh-card:    var(--card-bg, #ffffff);
+  --nh-border:  var(--border-color, #e5e7eb);
+  --nh-text:    var(--text-color, #1f2937);
+  --nh-muted:   var(--text-muted, #5b6471);
+  --nh-primary: var(--primary-color, #6b85a3);
+  --nh-accent:  var(--accent-color, #82a085);
+  --nh-bg:      var(--bg-color, #f5f6f8);
+  --nh-radius:  12px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 4px 4px 48px;
+  color: var(--nh-text);
+}
+
+/* ---- Header ------------------------------------------------------------- */
+.nh-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 18px 22px; margin-bottom: 22px;
+  background: linear-gradient(135deg, var(--nh-primary), var(--nh-accent));
+  border-radius: var(--nh-radius);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+.nh-header-left { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.nh-logo {
+  height: 46px; width: auto; max-width: 160px; object-fit: contain;
+  background: #fff; padding: 5px 9px; border-radius: 8px; flex-shrink: 0;
+}
+.nh-logo-fallback {
+  height: 46px; width: 46px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; flex-shrink: 0;
+}
+.nh-title { font-size: 22px; font-weight: 700; line-height: 1.2; }
+.nh-greeting { font-size: 13px; opacity: 0.92; margin-top: 3px; }
+.nh-header-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.nh-clockwrap { text-align: right; }
+.nh-header-nest { height: 36px; width: 36px; border-radius: 50%; background: #fff; padding: 4px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+.nh-clock { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.nh-date { font-size: 12px; opacity: 0.9; margin-top: 2px; }
+
+/* Header controls (home + refresh) — translucent on the gradient bar */
+.nh-header-actions { display: flex; align-items: center; gap: 8px; }
+.nh-hbtn {
+  height: 34px; width: 34px; border-radius: 50%; padding: 0;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.15); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 15px; cursor: pointer; line-height: 1;
+  transition: background .12s ease, transform .12s ease;
+}
+.nh-hbtn:hover { background: rgba(255,255,255,0.30); transform: translateY(-1px); }
+.nh-hbtn:active { transform: translateY(0); }
+
+/* ---- Horizontal body: left button column + right lists ------------------ */
+.nh-body { display: flex; gap: 22px; align-items: flex-start; }
+.nh-left  { flex: 1 1 50%; max-width: 50%; min-width: 0; }
+.nh-right { flex: 1 1 50%; max-width: 50%; min-width: 0; }
+
+.nh-section-label {
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--nh-muted); margin: 6px 4px 12px;
+}
+
+/* ---- Quick-launch buttons (2 wide, stacking in rows) -------------------- */
+.nh-tiles {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+}
+.nh-tile {
+  position: relative;
+  background: var(--nh-card); border: 1px solid var(--nh-border);
+  border-radius: var(--nh-radius); padding: 14px 12px; cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
+  border-top: 3px solid var(--nh-tile-accent, var(--nh-primary));
+  min-height: 84px;
+}
+.nh-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.10);
+  border-color: var(--nh-tile-accent, var(--nh-primary));
+}
+.nh-tile-icon {
+  font-size: 22px; color: var(--nh-tile-accent, var(--nh-primary)); line-height: 1;
+}
+.nh-tile-icon img { height: 24px; width: auto; }
+.nh-tile-label { font-size: 14px; font-weight: 650; line-height: 1.25; }
+.nh-tile-icon-img { line-height: 0; }
+.nh-tile-icon-img img { height: 34px; width: auto; max-width: 100%; border-radius: 6px; object-fit: contain; }
+
+/* ---- Attention lists (columns across the screen) ------------------------ */
+.nh-lists {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px; align-items: start;
+}
+.nh-list {
+  background: var(--nh-card); border: 1px solid var(--nh-border);
+  border-radius: var(--nh-radius); overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.nh-list-head {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; row-gap: 10px;
+  padding: 14px 18px; border-bottom: 1px solid var(--nh-border);
+  background: var(--subtle-fg, #f0f2f5);
+}
+.nh-list-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+.nh-list-title .nh-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.nh-dot-A { background: var(--nh-primary); }
+.nh-dot-B { background: var(--warning-color, #c4a373); }
+.nh-dot-C { background: var(--nh-accent); }
+.nh-list-sub { font-size: 11px; color: var(--nh-muted); font-weight: 500; margin-top: 1px; }
+.nh-count {
+  min-width: 26px; height: 24px; padding: 0 8px; border-radius: 12px;
+  background: var(--nh-primary); color: #fff; font-size: 12px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.nh-count.nh-zero { background: var(--nh-border); color: var(--nh-muted); }
+.nh-list-body { padding: 6px; max-height: 620px; overflow-y: auto; }
+
+/* filter + sort toolbar — a full-width second line inside the list header bar */
+.nh-list-tools {
+  display: flex; gap: 8px; align-items: stretch;
+  flex: 1 0 100%; width: 100%;
+}
+/* Shared control styling so the input + select are visually identical. */
+.nh-list-tools .nh-filter,
+.nh-list-tools .nh-sort {
+  box-sizing: border-box; height: 34px; line-height: 1.2;
+  border: 1px solid var(--nh-border); border-radius: 8px;
+  font-size: 13px; font-family: inherit; color: var(--nh-text);
+  background-color: transparent;
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+.nh-list-tools .nh-filter {
+  flex: 1 1 auto; min-width: 0; padding: 0 12px;
+}
+.nh-list-tools .nh-filter::placeholder { color: var(--nh-muted); opacity: .85; }
+.nh-list-tools .nh-sort {
+  flex: 0 0 38%; max-width: 200px; cursor: pointer;
+  padding: 0 30px 0 12px;
+  -webkit-appearance: none; -moz-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235b6471' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+.nh-list-tools .nh-filter:focus,
+.nh-list-tools .nh-sort:focus {
+  outline: none; border-color: var(--nh-primary);
+  box-shadow: 0 0 0 2px rgba(107,133,163,0.18);
+}
+
+/* condensed item rows: name + due date only */
+.nh-item {
+  display: flex; gap: 12px; align-items: center; justify-content: space-between;
+  padding: 11px 12px; border-radius: 9px; cursor: pointer;
+  transition: background .12s ease;
+}
+.nh-item:hover { background: var(--subtle-fg, #f0f2f5); }
+.nh-item + .nh-item { border-top: 1px solid var(--nh-border); }
+.nh-item-main { flex: 1; min-width: 0; }
+.nh-item-title {
+  font-size: 14px; font-weight: 600; line-height: 1.35;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.nh-item-right { display: flex; align-items: center; flex-shrink: 0; }
+.nh-due {
+  font-size: 12px; font-weight: 600; color: var(--nh-muted);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.nh-due-over { color: var(--error-color, #b07e7e); font-weight: 700; }
+.nh-due-none { color: var(--nh-border); font-weight: 500; }
+
+/* loading + empty states */
+.nh-loading { padding: 34px; text-align: center; color: var(--nh-muted); font-size: 13px; }
+.nh-empty {
+  padding: 38px 22px; text-align: center; color: var(--nh-muted);
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.nh-empty-check {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(130,160,133,0.16); color: var(--nh-accent);
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.nh-empty-title { font-size: 14px; font-weight: 650; color: var(--nh-text); }
+.nh-empty-msg { font-size: 12px; }
+.nh-error { padding: 22px; color: var(--error-color, #b07e7e); font-size: 13px; }
+
+/* ---- Responsive: stack the columns on narrow screens -------------------- */
+@media (max-width: 900px) {
+  .nh-body { flex-direction: column; }
+  .nh-left { flex-basis: auto; max-width: none; width: 100%; }
+  .nh-tiles { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .nh-lists { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .nh-header { flex-direction: column; align-items: flex-start; }
+  .nh-header-right { text-align: left; }
+}
+
+/* ---- Co-branding footer ------------------------------------------------- */
+.nh-footer {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 30px; padding-top: 18px;
+  border-top: 1px solid var(--nh-border);
+  color: var(--nh-muted);
+}
+.nh-powered { font-size: 12px; letter-spacing: .3px; }
+.nh-nest-logo { height: 22px; width: 22px; border-radius: 5px; }
+.nh-nest-name { font-size: 13px; font-weight: 700; color: var(--nh-text); }
+
+/* Footer support link */
+.nh-foot-sep { opacity: .5; }
+.nh-support { color: var(--nh-primary); font-size: 12px; font-weight: 600; text-decoration: none; }
+.nh-support:hover { text-decoration: underline; }
