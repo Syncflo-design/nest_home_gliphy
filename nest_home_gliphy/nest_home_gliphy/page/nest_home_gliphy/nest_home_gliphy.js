@@ -3,9 +3,10 @@
 // 2026-05-11. Mounts inside page.body (jQuery in v16) per 2026-05-10.
 // HTML is assembled as string arrays joined with "\n" (page-bundle rule).
 //
-// v0.0.3 layout: buttons sit in a narrow left column (2 wide); the attention
-// lists spread across the rest of the screen as columns. Each list row shows
-// only the company/lead name + due date — the rest is one click away.
+// v0.1.0 "gliphy" layout: a solid ink header bar, then full-width bands —
+// quick-launch tiles in a bento grid (a tile with a description spans two
+// columns and shows its blurb), then the attention lists across the rest.
+// Rows are two lines: the party, what it is, and the due date.
 
 frappe.pages['nest-home-gliphy'].on_page_load = function(wrapper) {
 	var page = frappe.ui.make_app_page({
@@ -14,7 +15,7 @@ frappe.pages['nest-home-gliphy'].on_page_load = function(wrapper) {
 		single_column: true
 	});
 
-	var BUILD_MARKER = 'v0.0.15-2026-06-01-help-discovery';
+	var BUILD_MARKER = 'v0.1.1-2026-09-23-gliphy-icons';
 	console.log('Nest Home Gliphy loaded:', BUILD_MARKER);
 
 	// Load page styles from the separate CSS file (keeps this JS well under the
@@ -40,13 +41,49 @@ frappe.pages['nest-home-gliphy'].on_page_show = function(wrapper) {
 // ---------------------------------------------------------------------------
 
 var NH_LIST_META = {
-	A: { title: 'My Activities',      sub: 'Do these',     dot: 'nh-dot-A',
+	A: { title: 'My Activities',      sub: 'Do these',     tint: 'nh-t-primary',
 	     empty_title: "You're all clear", empty_msg: 'No activities need you right now.' },
-	B: { title: 'Awaiting My Action', sub: 'Your call',    dot: 'nh-dot-B',
+	B: { title: 'Awaiting My Action', sub: 'Your call',    tint: 'nh-t-amber',
 	     empty_title: 'Nothing awaiting you', empty_msg: 'No drafts are waiting on your decision.' },
-	C: { title: 'Waiting On Others',  sub: 'Chase these',  dot: 'nh-dot-C',
+	C: { title: 'Waiting On Others',  sub: 'Chase these',  tint: 'nh-t-teal',
 	     empty_title: 'Nothing outstanding', empty_msg: "No one owes you anything right now." }
 };
+
+// Cycled across tiles that carry no colour of their own. Danger is deliberately
+// absent: red on a launch tile reads as a warning about the tile.
+var NH_TINTS = ['nh-t-primary', 'nh-t-teal', 'nh-t-amber'];
+
+// Inline SVG rather than a font glyph: it takes its colour from the stylesheet
+// and renders identically on every platform.
+var NH_CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+	+ ' stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'
+	+ ' aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>';
+
+// The default icon set, shipped as small SVG files under
+// public/images/icons/. A tile's `icon` field naming one of these gets the
+// image; swapping the file later re-skins every tile using it, with no code
+// change and nothing to re-enter on the records.
+//
+// Placeholders for now - plain line glyphs, deliberately neutral.
+var NH_ICONS = [
+	'pos', 'transfer', 'invoice', 'customers', 'items', 'box', 'ledger',
+	'report', 'count', 'supplier', 'guides', 'calendar', 'settings', 'launch'
+];
+
+var NH_ICON_PATH = '/assets/nest_home_gliphy/images/icons/';
+
+// Returns an <img> for a known icon name, or '' if the name is not one of ours.
+function nh_icon_img(key) {
+	if (NH_ICONS.indexOf(key) < 0) return '';
+	return '<img src="' + NH_ICON_PATH + key + '.svg" alt="" loading="lazy">';
+}
+
+// Overdue marker. Colour alone is not a signal, so an overdue date carries a
+// glyph as well as the danger colour.
+var NH_OVERDUE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+	+ ' stroke-width="2.2" stroke-linecap="round" aria-hidden="true">'
+	+ '<circle cx="12" cy="12" r="9"></circle>'
+	+ '<path d="M12 8v5M12 16.5v.01"></path></svg>';
 
 // Due-date rendering for a condensed row. Returns formatted text + overdue flag.
 function nh_due(it) {
@@ -145,15 +182,15 @@ class NestHomeGliphy {
 	render_shell() {
 		var shell = [
 			'<div class="nh-app">',
-			'  <div class="nh-header">',
-			'    <div class="nh-header-left">',
+			'  <div class="nh-bar">',
+			'    <div class="nh-bar-left">',
 			'      <span id="nh-logo-slot"></span>',
-			'      <div>',
+			'      <div class="nh-bar-titles">',
 			'        <div class="nh-title" id="nh-title">Nest Home Gliphy</div>',
 			'        <div class="nh-greeting" id="nh-greeting"></div>',
 			'      </div>',
 			'    </div>',
-			'    <div class="nh-header-right">',
+			'    <div class="nh-bar-right">',
 			'      <div class="nh-clockwrap">',
 			'        <div class="nh-clock" id="nh-clock"></div>',
 			'        <div class="nh-date" id="nh-date"></div>',
@@ -165,16 +202,15 @@ class NestHomeGliphy {
 			'      </div>',
 			'    </div>',
 			'  </div>',
-			'  <div class="nh-body">',
-			'    <div class="nh-left" id="nh-left" style="display:none;">',
-			'      <div class="nh-section-label">Quick launch</div>',
-			'      <div class="nh-tiles" id="nh-tiles"></div>',
-			'    </div>',
-			'    <div class="nh-right">',
-			'      <div class="nh-section-label">Needs your attention</div>',
-			'      <div class="nh-lists" id="nh-lists"></div>',
-			'    </div>',
+			// Bands stacked full width: tiles first, then the attention lists.
+			// v0.0.3 put buttons in a 50% left column; the bento grid needs the
+			// whole width for the two-column "large" tiles to read as primary.
+			'  <div id="nh-left" style="display:none;">',
+			'    <div class="nh-band"><h2>Quick launch</h2><div class="nh-rule"></div><span class="nh-n" id="nh-tile-count"></span></div>',
+			'    <div class="nh-grid" id="nh-tiles"></div>',
 			'  </div>',
+			'  <div class="nh-band"><h2>Needs your attention</h2><div class="nh-rule"></div></div>',
+			'  <div class="nh-lists" id="nh-lists"></div>',
 			'</div>'
 		].join('\n');
 		this.$main.html(shell);
@@ -200,6 +236,14 @@ class NestHomeGliphy {
 			if (route) {
 				try { route = JSON.parse(decodeURIComponent(route)); } catch (e) {}
 				if (Array.isArray(route)) frappe.set_route.apply(frappe, route);
+			}
+		});
+		// Rows are focusable, so Enter / Space must open them too — a keyboard
+		// user should not have to reach for the mouse.
+		this.$main.on('keydown', '.nh-item', function(e) {
+			if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+				e.preventDefault();
+				$(this).trigger('click');
 			}
 		});
 		// Quick-launch tile → navigate to its route.
@@ -307,30 +351,53 @@ class NestHomeGliphy {
 		// width of the screen.
 		if (!tiles || !tiles.length) { $('#nh-left').hide(); return; }
 		var esc = frappe.utils.escape_html;
-		var html = tiles.map(function(t) {
-			var accent = t.color ? (' style="--nh-tile-accent:' + esc(t.color) + ';"') : '';
+		var html = tiles.map(function(t, i) {
+			// A tile that carries a description is a primary action: it spans two
+			// columns and shows the blurb. Everything else is a compact,
+			// icon-led tile. Bento sizing, driven by the data, not by position.
+			var big = !!(t.description && String(t.description).trim());
+			// An explicit colour on the record wins; otherwise cycle the four
+			// semantic tints so a grid never comes out one flat colour.
+			var accent = t.color
+				? (' style="--tint:' + esc(t.color) + ';--tint-soft:' + esc(t.color) + '1F;"')
+				: '';
+			var tint_cls = t.color ? '' : (' ' + NH_TINTS[i % NH_TINTS.length]);
 			var icon = nh_tile_icon(t);
 			var icon_cls = t.icon_image ? 'nh-tile-icon nh-tile-icon-img' : 'nh-tile-icon';
 			var help_slug = esc(t.label || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+			var blurb = big
+				? '    <div class="nh-tile-blurb">' + esc(t.description) + '</div>'
+				: '';
 			return [
-				'<div class="nh-tile"' + accent + ' data-route="' + esc(t.route || '') + '"' + (t.open_in_new_tab ? ' data-newtab="1"' : '') + ' data-help="' + help_slug + '">',
-				'  <div class="' + icon_cls + '">' + icon + '</div>',
-				'  <div class="nh-tile-label">' + esc(t.label || '') + '</div>',
-				'</div>'
+				'<button type="button" class="nh-tile' + (big ? ' nh-tile--lg' : '') + tint_cls + '"' + accent + ' data-route="' + esc(t.route || '') + '"' + (t.open_in_new_tab ? ' data-newtab="1"' : '') + ' data-help="' + help_slug + '">',
+				'  <span class="' + icon_cls + '">' + icon + '</span>',
+				'  <span class="nh-tile-body">',
+				'    <div class="nh-tile-label">' + esc(t.label || '') + '</div>',
+				blurb,
+				'  </span>',
+				'  <span class="nh-chev">' + NH_CHEVRON + '</span>',
+				'</button>'
 			].join('\n');
 		}).join('\n');
 		$('#nh-tiles').html(html);
+		$('#nh-tile-count').text(tiles.length);
 		$('#nh-left').show();
 		// If nest_help app is installed, auto-discover help badges for tiles.
 		if (window.nestHelp) window.nestHelp.discover($('#nh-tiles'));
 
-		// An uploaded image (icon_image) wins; then a URL/path in `icon`; then a
-		// Font Awesome / Octicon class; otherwise treat `icon` as emoji / text.
+		// An uploaded image (icon_image) wins; then a URL/path in `icon`; then one
+		// of the shipped default icons by name; then a Font Awesome / Octicon
+		// class; otherwise treat `icon` as plain text.
+		//
+		// The shipped set is checked before the legacy class handling so an
+		// existing tile can be switched to a real icon by changing one field.
 		function nh_tile_icon(t) {
 			if (t.icon_image) return '<img src="' + esc(t.icon_image) + '" alt="">';
 			var ic = t.icon;
-			if (!ic) return '<i class="fa fa-rocket"></i>';
+			if (!ic) return nh_icon_img('launch');
 			if (/^https?:|^\//.test(ic)) return '<img src="' + esc(ic) + '" alt="">';
+			var shipped = nh_icon_img(String(ic).trim().toLowerCase());
+			if (shipped) return shipped;
 			if (/octicon|^fa /.test(ic)) return '<i class="' + esc(ic) + '"></i>';
 			return esc(ic);
 		}
@@ -351,10 +418,10 @@ class NestHomeGliphy {
 				'  </div>'
 			].join('\n') : '';
 			return [
-				'<section class="nh-list" id="nh-list-' + cat + '">',
+				'<section class="nh-list ' + m.tint + '" id="nh-list-' + cat + '" aria-label="' + m.title + '">',
 				'  <div class="nh-list-head">',
 				'    <div>',
-				'      <div class="nh-list-title"><span class="nh-dot ' + m.dot + '"></span>' + m.title + '</div>',
+				'      <div class="nh-list-title"><span class="nh-dot"></span>' + m.title + '</div>',
 				'      <div class="nh-list-sub">' + m.sub + '</div>',
 				'    </div>',
 				'    <span class="nh-count nh-zero" id="nh-count-' + cat + '">0</span>',
@@ -430,20 +497,27 @@ class NestHomeGliphy {
 		$body.html(items.map(function(it) { return me.item_html(it); }).join('\n'));
 	}
 
-	// Condensed row: company/lead name on the left, due date on the right.
-	// Everything else (priority, amount, description, status) is one click away.
+	// Two-line row: the party on top, what it is underneath, due date on the
+	// right. Everything else (priority, amount, status) is one click away.
 	item_html(it) {
 		var esc = frappe.utils.escape_html;
 		var route = encodeURIComponent(JSON.stringify(it.deep_link || []));
 		var main = it.owner_or_party || it.title || '(untitled)';
+		// The subtitle only earns its line when it says something the title
+		// does not — otherwise the row reads as the same words twice.
+		var sub = (it.subtitle && it.subtitle !== main) ? it.subtitle : '';
 		var due = nh_due(it);
 		var due_html = due.text
-			? '<span class="nh-due' + (due.over ? ' nh-due-over' : '') + '">' + esc(due.text) + '</span>'
+			? '<span class="nh-due' + (due.over ? ' nh-due-over' : '') + '">'
+				+ (due.over ? NH_OVERDUE : '') + esc(due.text) + '</span>'
 			: '<span class="nh-due nh-due-none">No date</span>';
 
 		return [
-			'<div class="nh-item" data-route="' + route + '">',
-			'  <div class="nh-item-main"><div class="nh-item-title">' + esc(main) + '</div></div>',
+			'<div class="nh-item" data-route="' + route + '" tabindex="0" title="' + esc(main) + '">',
+			'  <div class="nh-item-main">',
+			'    <div class="nh-item-title">' + esc(main) + '</div>',
+			sub ? '    <div class="nh-item-sub">' + esc(sub) + '</div>' : '',
+			'  </div>',
 			'  <div class="nh-item-right">' + due_html + '</div>',
 			'</div>'
 		].join('\n');
