@@ -137,6 +137,16 @@ def ensure_admin_layout():
                 label, route, icon, color, i, blurb=blurb, group=group
             )})
 
+        # The bottom row belongs on the default layout too, or the phone screens
+        # and the guides exist in the library and appear nowhere. Still gated on
+        # the page being installed, so a dead card never ships.
+        for j, (label, route, icon, color, blurb, group, page) in enumerate(_ALSO_HERE_TILES):
+            if page and not frappe.db.exists("Page", page):
+                continue
+            tile_rows.append({"tile": _ensure_tile(
+                label, route, icon, color, 900 + j, blurb=blurb, group=group
+            )})
+
         frappe.get_doc({
             "doctype": "Nest Home Gliphy Layout",
             "layout_name": ADMIN_LAYOUT_NAME,
