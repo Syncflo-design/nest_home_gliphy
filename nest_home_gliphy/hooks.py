@@ -59,10 +59,6 @@ fixtures = [
             "User-preferred_landing_page",
         ]]],
     },
-    {
-        "doctype": "Nest Home Gliphy Tile",
-        "filters": [["name", "like", "NEST-TILE-%"]],
-    },
 ]
 
 # No global desk bundle — the page loads its own CSS via a <link> tag.
