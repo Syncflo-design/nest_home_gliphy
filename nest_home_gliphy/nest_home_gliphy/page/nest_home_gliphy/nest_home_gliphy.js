@@ -1,22 +1,23 @@
-// nest_home_gliphy — role-based, branded landing page (push, not pull).
+﻿// nest_home_gliphy — role-based, branded landing page (push, not pull).
 // Built as a desk Page (not listview hooks) per CoWork_Helper gotchas
 // 2026-05-11. Mounts inside page.body (jQuery in v16) per 2026-05-10.
 // HTML is assembled as string arrays joined with "\n" (page-bundle rule).
 //
-// v0.1.0 "gliphy" layout: a solid ink header bar, then full-width bands —
-// quick-launch tiles in a bento grid (a tile with a description spans two
-// columns and shows its blurb), then the attention lists across the rest.
-// Rows are two lines: the party, what it is, and the due date.
+// v0.3.0 "gliphy" layout: a solid ink header bar, then full-width bands —
+// quick-launch tiles in three zones driven by each tile's Group field
+// (Action / Reference below a rule / Also here at the bottom), then the
+// attention lists across the rest. Every tile carries a blurb; rows are two
+// lines: the party, what it is, and the due date.
 
 frappe.pages['nest-home-gliphy'].on_page_load = function(wrapper) {
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
-		title: 'Nest Home Gliphy',
+		title: 'Nest ERP',
 		single_column: true
 	});
 
-	var BUILD_MARKER = 'v0.1.1-2026-09-23-gliphy-icons';
-	console.log('Nest Home Gliphy loaded:', BUILD_MARKER);
+	var BUILD_MARKER = 'v0.3.0-2026-09-28-phosphor-icons';
+	console.log('Nest ERP home loaded:', BUILD_MARKER);
 
 	// Load page styles from the separate CSS file (keeps this JS well under the
 	// Cowork ~20KB Write/Edit truncation cap; CSS split from line one).
@@ -59,12 +60,10 @@ var NH_CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
 	+ ' stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'
 	+ ' aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>';
 
-// The default icon set, shipped as small SVG files under
+// The shipped icon set: Phosphor (fill weight, MIT), as SVG files under
 // public/images/icons/. A tile's `icon` field naming one of these gets the
-// image; swapping the file later re-skins every tile using it, with no code
+// glyph; swapping the file later re-skins every tile using it, with no code
 // change and nothing to re-enter on the records.
-//
-// Placeholders for now - plain line glyphs, deliberately neutral.
 var NH_ICONS = [
 	'pos', 'transfer', 'invoice', 'customers', 'items', 'box', 'ledger',
 	'report', 'count', 'supplier', 'guides', 'calendar', 'settings', 'launch'
@@ -72,10 +71,33 @@ var NH_ICONS = [
 
 var NH_ICON_PATH = '/assets/nest_home_gliphy/images/icons/';
 
-// Returns an <img> for a known icon name, or '' if the name is not one of ours.
+// Returns a masked span for a known icon name, or '' if the name is not ours.
+//
+// A span painted through a CSS mask, not an <img>: the mask uses the file's
+// shape only, so the glyph takes the tile's accent colour and works in both
+// themes. An <img> cannot inherit currentColor and needed a filter hack to
+// survive dark mode.
 function nh_icon_img(key) {
 	if (NH_ICONS.indexOf(key) < 0) return '';
-	return '<img src="' + NH_ICON_PATH + key + '.svg" alt="" loading="lazy">';
+	return '<span class="nh-ico" style="--ico:url(' + NH_ICON_PATH + key + '.svg)"></span>';
+}
+
+// An uploaded image (icon_image) wins; then a URL/path in `icon`; then one of
+// the shipped default icons by name; then a Font Awesome / Octicon class;
+// otherwise treat `icon` as plain text.
+//
+// The shipped set is checked before the legacy class handling so an existing
+// tile can be switched to a real icon by changing one field.
+function nh_tile_icon(t) {
+	var esc = frappe.utils.escape_html;
+	if (t.icon_image) return '<img src="' + esc(t.icon_image) + '" alt="">';
+	var ic = t.icon;
+	if (!ic) return nh_icon_img('launch');
+	if (/^https?:|^\//.test(ic)) return '<img src="' + esc(ic) + '" alt="">';
+	var shipped = nh_icon_img(String(ic).trim().toLowerCase());
+	if (shipped) return shipped;
+	if (/octicon|^fa /.test(ic)) return '<i class="' + esc(ic) + '"></i>';
+	return esc(ic);
 }
 
 // Overdue marker. Colour alone is not a signal, so an overdue date carries a
@@ -186,7 +208,7 @@ class NestHomeGliphy {
 			'    <div class="nh-bar-left">',
 			'      <span id="nh-logo-slot"></span>',
 			'      <div class="nh-bar-titles">',
-			'        <div class="nh-title" id="nh-title">Nest Home Gliphy</div>',
+			'        <div class="nh-title" id="nh-title">Nest ERP</div>',
 			'        <div class="nh-greeting" id="nh-greeting"></div>',
 			'      </div>',
 			'    </div>',
@@ -207,7 +229,16 @@ class NestHomeGliphy {
 			// whole width for the two-column "large" tiles to read as primary.
 			'  <div id="nh-left" style="display:none;">',
 			'    <div class="nh-band"><h2>Quick launch</h2><div class="nh-rule"></div><span class="nh-n" id="nh-tile-count"></span></div>',
+			// Three zones. Actions are the things you DO; reference sits below a
+			// rule because looking something up is not the same as doing it; the
+			// "Also here" row is for what is not part of anybody's job - the
+			// phone screens, the guides, and how to ask for help.
 			'    <div class="nh-grid" id="nh-tiles"></div>',
+			'    <div class="nh-grid nh-grid--ref" id="nh-tiles-ref" style="display:none;"></div>',
+			'  </div>',
+			'  <div id="nh-also" style="display:none;">',
+			'    <div class="nh-band"><h2>Also here</h2><div class="nh-rule"></div></div>',
+			'    <div class="nh-also-row" id="nh-tiles-also"></div>',
 			'  </div>',
 			'  <div class="nh-band"><h2>Needs your attention</h2><div class="nh-rule"></div></div>',
 			'  <div class="nh-lists" id="nh-lists"></div>',
@@ -230,7 +261,7 @@ class NestHomeGliphy {
 
 	bind_events() {
 		var me = this;
-		// Attention item → open its source via the normalised deep_link array.
+		// Attention item â†’ open its source via the normalised deep_link array.
 		this.$main.on('click', '.nh-item', function() {
 			var route = $(this).data('route');
 			if (route) {
@@ -246,7 +277,7 @@ class NestHomeGliphy {
 				$(this).trigger('click');
 			}
 		});
-		// Quick-launch tile → navigate to its route.
+		// Quick-launch tile â†’ navigate to its route.
 		this.$main.on('click', '.nh-tile', function() {
 			me.open_route($(this).data('route'), $(this).data('newtab'));
 		});
@@ -322,7 +353,7 @@ class NestHomeGliphy {
 
 	render_header(ctx) {
 		var esc = frappe.utils.escape_html;
-		$('#nh-title').text(ctx.app_title || 'Nest Home Gliphy');
+		$('#nh-title').text(ctx.app_title || 'Nest ERP');
 		if (ctx.show_nest_credit !== false) {
 			$('#nh-footer').show();
 			$('#nh-header-nest').show();
@@ -347,29 +378,66 @@ class NestHomeGliphy {
 	}
 
 	render_tiles(tiles) {
-		// No buttons → hide the left column entirely so the lists take the full
-		// width of the screen.
-		if (!tiles || !tiles.length) { $('#nh-left').hide(); return; }
+		// No buttons â†’ hide the whole quick-launch block so the lists take the
+		// full width of the screen.
+		if (!tiles || !tiles.length) { $('#nh-left').hide(); $('#nh-also').hide(); return; }
+
+		// Three zones, split on the tile's own Group field.
+		//   Action    - the things you DO, the main grid
+		//   Reference - what you look up rather than do, below a rule
+		//   Also here - not part of anybody's job: phone screens, guides, support
+		var me = this;
+		var zones = { 'Action': [], 'Reference': [], 'Also here': [] };
+		tiles.forEach(function(t) {
+			(zones[t.tile_group] || zones['Action']).push(t);
+		});
+
+		$('#nh-tiles').html(this.tiles_html(zones['Action']));
+		$('#nh-tile-count').text(zones['Action'].length);
+
+		var $ref = $('#nh-tiles-ref');
+		if (zones['Reference'].length) {
+			$ref.html(this.tiles_html(zones['Reference'], zones['Action'].length)).show();
+		} else {
+			$ref.empty().hide();
+		}
+
+		var $also = $('#nh-tiles-also');
+		if (zones['Also here'].length) {
+			$also.html(this.tiles_html(zones['Also here'], 0, true));
+			$('#nh-also').show();
+		} else {
+			$also.empty();
+			$('#nh-also').hide();
+		}
+
+		$('#nh-left').show();
+		// If nest_help app is installed, auto-discover help badges for tiles.
+		if (window.nestHelp) window.nestHelp.discover($('#nh-left'));
+		return;
+	}
+
+	// Markup for one zone. `offset` keeps the tint cycle running across zones so
+	// the reference row does not restart on the same colour the actions began on.
+	// `small` is the "Also here" treatment: same card grammar, smaller, no rail.
+	tiles_html(tiles, offset, small) {
 		var esc = frappe.utils.escape_html;
-		var html = tiles.map(function(t, i) {
-			// A tile that carries a description is a primary action: it spans two
-			// columns and shows the blurb. Everything else is a compact,
-			// icon-led tile. Bento sizing, driven by the data, not by position.
-			var big = !!(t.description && String(t.description).trim());
-			// An explicit colour on the record wins; otherwise cycle the four
-			// semantic tints so a grid never comes out one flat colour.
+		offset = offset || 0;
+		return (tiles || []).map(function(t, i) {
+			// An explicit colour on the record wins; otherwise cycle the semantic
+			// tints so a grid never comes out one flat colour.
 			var accent = t.color
 				? (' style="--tint:' + esc(t.color) + ';--tint-soft:' + esc(t.color) + '1F;"')
 				: '';
-			var tint_cls = t.color ? '' : (' ' + NH_TINTS[i % NH_TINTS.length]);
+			var tint_cls = t.color ? '' : (' ' + NH_TINTS[(i + offset) % NH_TINTS.length]);
 			var icon = nh_tile_icon(t);
 			var icon_cls = t.icon_image ? 'nh-tile-icon nh-tile-icon-img' : 'nh-tile-icon';
 			var help_slug = esc(t.label || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
-			var blurb = big
+			var blurb = (t.description && String(t.description).trim())
 				? '    <div class="nh-tile-blurb">' + esc(t.description) + '</div>'
 				: '';
 			return [
-				'<button type="button" class="nh-tile' + (big ? ' nh-tile--lg' : '') + tint_cls + '"' + accent + ' data-route="' + esc(t.route || '') + '"' + (t.open_in_new_tab ? ' data-newtab="1"' : '') + ' data-help="' + help_slug + '">',
+				'<button type="button" class="nh-tile' + (small ? ' nh-tile--sm' : '') + tint_cls + '"' + accent + ' data-route="' + esc(t.route || '') + '"' + (t.open_in_new_tab ? ' data-newtab="1"' : '') + ' data-help="' + help_slug + '">',
 				'  <span class="' + icon_cls + '">' + icon + '</span>',
 				'  <span class="nh-tile-body">',
 				'    <div class="nh-tile-label">' + esc(t.label || '') + '</div>',
@@ -379,28 +447,6 @@ class NestHomeGliphy {
 				'</button>'
 			].join('\n');
 		}).join('\n');
-		$('#nh-tiles').html(html);
-		$('#nh-tile-count').text(tiles.length);
-		$('#nh-left').show();
-		// If nest_help app is installed, auto-discover help badges for tiles.
-		if (window.nestHelp) window.nestHelp.discover($('#nh-tiles'));
-
-		// An uploaded image (icon_image) wins; then a URL/path in `icon`; then one
-		// of the shipped default icons by name; then a Font Awesome / Octicon
-		// class; otherwise treat `icon` as plain text.
-		//
-		// The shipped set is checked before the legacy class handling so an
-		// existing tile can be switched to a real icon by changing one field.
-		function nh_tile_icon(t) {
-			if (t.icon_image) return '<img src="' + esc(t.icon_image) + '" alt="">';
-			var ic = t.icon;
-			if (!ic) return nh_icon_img('launch');
-			if (/^https?:|^\//.test(ic)) return '<img src="' + esc(ic) + '" alt="">';
-			var shipped = nh_icon_img(String(ic).trim().toLowerCase());
-			if (shipped) return shipped;
-			if (/octicon|^fa /.test(ic)) return '<i class="' + esc(ic) + '"></i>';
-			return esc(ic);
-		}
 	}
 
 	build_list_sections() {

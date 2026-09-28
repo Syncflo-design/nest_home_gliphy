@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nest Home Gliphy — preview</title>
+<title>Nest ERP &mdash; preview</title>
 <style>
 /* ===========================================================================
    nest_home_gliphy — landing page stylesheet (v2 "gliphy" look).
@@ -24,7 +24,11 @@
 
 .nh-app {
   /* -- Surfaces + ink --------------------------------------------------- */
-  --ink: #0F172A;
+  /* The header slab is NestERP's own slate-blue, not a near-black. #4a6580 is
+     the darker of the two tones in the Nest mark (the lighter is #6b85a3) and
+     the `--primary-hover` of nest_theme's Soft Professional palette, so the
+     page reads as the same family as the rest of the desk. */
+  --ink: #4a6580;
   --canvas: var(--bg-color, #EEF2F7);
   --card: var(--card-bg, #FFFFFF);
   --line: var(--border-color, #E2E8F0);
@@ -63,7 +67,8 @@
 /* Dark: desaturated tonal variants, not inverted hues. Contrast re-checked
    against --card rather than assumed from the light values. */
 html[data-theme="dark"] .nh-app {
-  --ink: #0B1220;
+  /* The same slate-blue, dropped to a depth that sits on a dark canvas. */
+  --ink: #2C3E52;
   --canvas: var(--bg-color, #0B0F17);
   --card: var(--card-bg, #141B26);
   --line: var(--border-color, #26303F);
@@ -105,10 +110,13 @@ html[data-theme="dark"] .nh-app {
   position: relative; overflow: hidden;
 }
 
-/* One hairline of accent along the top edge - the only ornament on the bar. */
+/* One hairline of accent along the top edge - the only ornament on the bar.
+   Retuned to the nest_theme Soft Professional trio (slate-blue, sage, warm
+   taupe) now the slab itself is brand slate-blue; the old blue/teal/amber
+   read as a third palette sitting on top of the other two. */
 .nh-bar::before {
   content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
-  background: linear-gradient(90deg, #2563EB 0%, #0F766E 50%, #D97706 100%);
+  background: linear-gradient(90deg, #6b85a3 0%, #82a085 50%, #c4a373 100%);
 }
 
 .nh-bar :focus-visible { outline-color: #fff; }
@@ -167,15 +175,35 @@ html[data-theme="dark"] .nh-app {
   background: var(--line); border-radius: 999px; padding: 2px var(--s-2);
 }
 
-/* -- Bento tile grid: four columns, tiles with a blurb span two. --------- */
+/* -- Tile grid ----------------------------------------------------------- */
+/* Auto-fill rather than a fixed four, so a tile stays the same size whether
+   there are five of them or twenty, and the row simply wraps. 240px is the
+   width at which a two-line blurb still reads at 125% browser zoom. */
 
 .nh-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: var(--s-3); margin-bottom: var(--s-8);
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--s-3); margin-bottom: var(--s-6);
 }
 
+/* The reference row: what you look up rather than do. A rule and some air so
+   the row above reads as a complete set of actions. */
+.nh-grid--ref {
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+  margin-bottom: var(--s-8);
+}
+
+/* "Also here": the phone screens, the guides, how to ask for help. Same card
+   grammar, smaller, and no accent rail so it stays subordinate. */
+.nh-also-row {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--s-3); margin-bottom: var(--s-8);
+}
+.nh-also-row .nh-tile { padding-left: var(--s-4); box-shadow: none; }
+.nh-also-row .nh-tile::before { content: none; }
+
 .nh-tile {
-  position: relative; display: flex; gap: var(--s-3); align-items: center;
+  position: relative; display: flex; gap: var(--s-3); align-items: flex-start;
   background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
   box-shadow: var(--e1);
   padding: var(--s-3) var(--s-4) var(--s-3) var(--s-6);
@@ -195,10 +223,10 @@ html[data-theme="dark"] .nh-app {
 .nh-tile:hover::before { width: 6px; }
 .nh-tile:active { transform: translateY(0); }
 
-.nh-tile--lg {
-  grid-column: span 2; align-items: flex-start;
-  padding-top: var(--s-4); padding-bottom: var(--s-4);
-}
+/* Kept for a tile that should read as the one primary action on a screen.
+   Not applied automatically any more - every action tile carries a blurb now,
+   so sizing by "has a description" would have made the whole grid two-wide. */
+.nh-tile--lg { grid-column: span 2; }
 
 .nh-tile-icon {
   flex: 0 0 auto; width: 36px; height: 36px; border-radius: var(--r-sm);
@@ -209,23 +237,36 @@ html[data-theme="dark"] .nh-app {
 .nh-tile--lg .nh-tile-icon { width: 40px; height: 40px; }
 .nh-tile-icon svg { width: 19px; height: 19px; }
 .nh-tile--lg .nh-tile-icon svg { width: 21px; height: 21px; }
+
+/* The shipped glyphs are painted through a mask rather than drawn as an image,
+   so they take the tile's accent colour and need no dark-mode correction. An
+   <img> cannot inherit currentColor; a mask uses the file's shape only. */
+.nh-ico {
+  display: block; width: 20px; height: 20px;
+  background-color: currentColor;
+  -webkit-mask: var(--ico) center / contain no-repeat;
+  mask: var(--ico) center / contain no-repeat;
+}
+.nh-tile--lg .nh-ico { width: 22px; height: 22px; }
+
+/* A customer's own uploaded artwork stays an image, at its own colours. */
 .nh-tile-icon img { height: 20px; width: 20px; object-fit: contain; }
 .nh-tile--lg .nh-tile-icon img { height: 22px; width: 22px; }
-/* The shipped icons are dark-stroked files, so they need flipping on a dark
-   chip. An <img> cannot inherit currentColor - this is the cheap way until
-   the real icon set arrives. */
-html[data-theme="dark"] .nh-tile-icon img { filter: invert(1) brightness(1.6); }
-/* An uploaded customer icon is not ours to recolour. */
-html[data-theme="dark"] .nh-tile-icon-img img { filter: none; }
 .nh-tile-icon-img { line-height: 0; background: transparent; }
 
 .nh-tile-body { min-width: 0; flex: 1; }
 .nh-tile-label { font-size: var(--fs-lg); font-weight: 600; line-height: 1.35; }
 .nh-tile-blurb {
   font-size: var(--fs-sm); color: var(--muted); line-height: 1.45; margin-top: 2px;
+  /* Two lines, always. Grid rows stretch to their tallest card, so one blurb
+     running to three lines made every card in that row taller - the whole row
+     paying for one tile's wording. Reserving the space keeps rows level. */
+  min-height: 2.9em;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
   line-clamp: 2; overflow: hidden;
 }
+/* A tile with no blurb should not reserve the space for one. */
+.nh-tile:not(:has(.nh-tile-blurb)) { align-items: center; }
 
 .nh-chev { margin-left: auto; align-self: center; color: var(--muted); flex: 0 0 auto; opacity: .6; }
 .nh-chev svg { width: 16px; height: 16px; }
@@ -379,145 +420,193 @@ html[data-theme="dark"] .nh-tile-icon-img img { filter: none; }
 </style>
 </head>
 <body>
-<!-- Markup mirrors exactly what nest_home_gliphy.js emits, against the shipped CSS. -->
 <div class="nest-home-gliphy-root">
 <div class="nh-app">
+
   <div class="nh-bar">
     <div class="nh-bar-left">
-      <span id="nh-logo-slot"><span class="nh-logo-fallback">R</span></span>
+      <span id="nh-logo-slot"><span class="nh-logo-fallback">A</span></span>
       <div class="nh-bar-titles">
-        <div class="nh-title" id="nh-title">Nest Home Gliphy</div>
-        <div class="nh-greeting" id="nh-greeting">Welcome back, Russell Stroebel.</div>
+        <div class="nh-title">Nest ERP</div>
+        <div class="nh-greeting">Here&rsquo;s what needs you today.</div>
       </div>
     </div>
     <div class="nh-bar-right">
       <div class="nh-clockwrap">
-        <div class="nh-clock" id="nh-clock">08:42</div>
-        <div class="nh-date" id="nh-date">Wed, 23 Sep</div>
+        <div class="nh-clock">11:05</div>
+        <div class="nh-date">Mon 28 Sept</div>
       </div>
-      <img class="nh-header-nest" src="../../../../../../../ClaudeCode/x.svg" alt="" style="display:none;">
       <div class="nh-header-actions">
-        <button class="nh-hbtn" title="Home" aria-label="Home">&#8962;</button>
-        <button class="nh-hbtn" title="Refresh" aria-label="Refresh">&#8635;</button>
+        <button class="nh-hbtn" aria-label="Home">&#8962;</button>
+        <button class="nh-hbtn" aria-label="Refresh">&#8635;</button>
       </div>
     </div>
   </div>
 
   <div id="nh-left">
-    <div class="nh-band"><h2>Quick launch</h2><div class="nh-rule"></div><span class="nh-n" id="nh-tile-count">6</span></div>
-    <div class="nh-grid" id="nh-tiles">
+    <div class="nh-band"><h2>Quick launch</h2><div class="nh-rule"></div><span class="nh-n">8</span></div>
+    <div class="nh-grid"><button type="button" class="nh-tile nh-t-primary">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjE2IDQwSDQwYTE2IDE2IDAgMCAwLTE2IDE2djE1MmE4IDggMCAwIDAgMTEuNTggNy4xNUw2NCAyMDAuOTRsMjguNDIgMTQuMjFhOCA4IDAgMCAwIDcuMTYgMEwxMjggMjAwLjk0bDI4LjQyIDE0LjIxYTggOCAwIDAgMCA3LjE2IDBMMTkyIDIwMC45NGwyOC40MiAxNC4yMUE4IDggMCAwIDAgMjMyIDIwOFY1NmExNiAxNiAwIDAgMC0xNi0xNm0tNDAgMTA0SDgwYTggOCAwIDAgMSAwLTE2aDk2YTggOCAwIDAgMSAwIDE2bTAtMzJIODBhOCA4IDAgMCAxIDAtMTZoOTZhOCA4IDAgMCAxIDAgMTYiLz48L3N2Zz4K)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Selling</div>
+    <div class="nh-tile-blurb">Quotations, orders and what they are worth</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-teal">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJtMjU1LjQzIDExN2wtMTQtMzVhMTUuOTMgMTUuOTMgMCAwIDAtMTQuODUtMTBIMTkydi04YTggOCAwIDAgMC04LThIMzJhMTYgMTYgMCAwIDAtMTYgMTZ2MTEyYTE2IDE2IDAgMCAwIDE2IDE2aDE3YTMyIDMyIDAgMCAwIDYyIDBoNTBhMzIgMzIgMCAwIDAgNjIgMGgxN2ExNiAxNiAwIDAgMCAxNi0xNnYtNjRhOC4xIDguMSAwIDAgMC0uNTctM004MCAyMDhhMTYgMTYgMCAxIDEgMTYtMTZhMTYgMTYgMCAwIDEtMTYgMTZtLTQ4LTcyVjcyaDE0NHY2NFptMTYwIDcyYTE2IDE2IDAgMSAxIDE2LTE2YTE2IDE2IDAgMCAxLTE2IDE2bTAtOTZWODhoMzQuNThsOS42IDI0WiIvPjwvc3ZnPgo=)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Buying</div>
+    <div class="nh-tile-blurb">Purchase orders and what is on its way in</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-amber">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJtMjIzLjY4IDY2LjE1bC04OC00OC4xNWExNS44OCAxNS44OCAwIDAgMC0xNS4zNiAwbC04OCA0OC4xN2ExNiAxNiAwIDAgMC04LjMyIDE0djk1LjY0YTE2IDE2IDAgMCAwIDguMzIgMTRsODggNDguMTdhMTUuODggMTUuODggMCAwIDAgMTUuMzYgMGw4OC00OC4xN2ExNiAxNiAwIDAgMCA4LjMyLTE0VjgwLjE4YTE2IDE2IDAgMCAwLTguMzItMTQuMDNNMTI4IDMybDgwLjM1IDQ0bC0yOS43OCAxNi4yOWwtODAuMzUtNDRabTAgODhMNDcuNjUgNzZsMzMuOTEtMTguNTdsODAuMzUgNDRabTg4IDU1Ljg1bC04MCA0My43OXYtODUuODFsMzItMTcuNTFWMTUyYTggOCAwIDAgMCAxNiAwdi00NC40NGwzMi0xNy41MXY4NS43NloiLz48L3N2Zz4K)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Stock</div>
+    <div class="nh-tile-blurb">What you hold, where it is, and what moved</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-primary">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjE2IDQwSDQwYTE2IDE2IDAgMCAwLTE2IDE2djE1MmE4IDggMCAwIDAgMTEuNTggNy4xNUw2NCAyMDAuOTRsMjguNDIgMTQuMjFhOCA4IDAgMCAwIDcuMTYgMEwxMjggMjAwLjk0bDI4LjQyIDE0LjIxYTggOCAwIDAgMCA3LjE2IDBMMTkyIDIwMC45NGwyOC40MiAxNC4yMUE4IDggMCAwIDAgMjMyIDIwOFY1NmExNiAxNiAwIDAgMC0xNi0xNm0tNDAgMTA0SDgwYTggOCAwIDAgMSAwLTE2aDk2YTggOCAwIDAgMSAwIDE2bTAtMzJIODBhOCA4IDAgMCAxIDAtMTZoOTZhOCA4IDAgMCAxIDAgMTYiLz48L3N2Zz4K)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Invoicing</div>
+    <div class="nh-tile-blurb">Raise invoices and see what is owed</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-teal">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNNjQuMTIgMTQ3LjhhNCA0IDAgMCAxLTQgNC4ySDE2YTggOCAwIDAgMS03LjgtNi4xN2E4LjM1IDguMzUgMCAwIDEgMS42Mi02LjkzQTY3LjggNjcuOCAwIDAgMSAzNyAxMTcuNTFhNDAgNDAgMCAxIDEgNjYuNDYtMzUuOGEzLjk0IDMuOTQgMCAwIDEtMi4yNyA0LjE4QTY0LjA4IDY0LjA4IDAgMCAwIDY0IDE0NGMwIDEuMjggMCAyLjU0LjEyIDMuOG0xODItOC45MUE2Ny43NiA2Ny43NiAwIDAgMCAyMTkgMTE3LjUxYTQwIDQwIDAgMSAwLTY2LjQ2LTM1LjhhMy45NCAzLjk0IDAgMCAwIDIuMjcgNC4xOEE2NC4wOCA2NC4wOCAwIDAgMSAxOTIgMTQ0YzAgMS4yOCAwIDIuNTQtLjEyIDMuOGE0IDQgMCAwIDAgNCA0LjJIMjQwYTggOCAwIDAgMCA3LjgtNi4xN2E4LjMzIDguMzMgMCAwIDAtMS42My02Ljk0Wm0tODkgNDMuMThhNDggNDggMCAxIDAtNTguMzcgMEE3Mi4xMyA3Mi4xMyAwIDAgMCA2NS4wNyAyMTJBOCA4IDAgMCAwIDcyIDIyNGgxMTJhOCA4IDAgMCAwIDYuOTMtMTJhNzIuMTUgNzIuMTUgMCAwIDAtMzMuNzQtMjkuOTNaIi8+PC9zdmc+Cg==)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">CRM</div>
+    <div class="nh-tile-blurb">Leads, opportunities and who to call next</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-amber">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjM3Ljk0IDEwNy4yMWE4IDggMCAwIDAtMy44OS01LjRsLTI5LjgzLTE3bC0uMTItMzMuNjJhOCA4IDAgMCAwLTIuODMtNi4wOGExMTEuOSAxMTEuOSAwIDAgMC0zNi43Mi0yMC42N2E4IDggMCAwIDAtNi40Ni41OUwxMjggNDEuODVMOTcuODggMjVhOCA4IDAgMCAwLTYuNDctLjZhMTExLjkgMTExLjkgMCAwIDAtMzYuNjggMjAuNzVhOCA4IDAgMCAwLTIuODMgNi4wN2wtLjE1IDMzLjY1bC0yOS44MyAxN2E4IDggMCAwIDAtMy44OSA1LjRhMTA2LjUgMTA2LjUgMCAwIDAgMCA0MS41NmE4IDggMCAwIDAgMy44OSA1LjRsMjkuODMgMTdsLjEyIDMzLjYzYTggOCAwIDAgMCAyLjgzIDYuMDhhMTExLjkgMTExLjkgMCAwIDAgMzYuNzIgMjAuNjdhOCA4IDAgMCAwIDYuNDYtLjU5TDEyOCAyMTQuMTVMMTU4LjEyIDIzMWE3LjkgNy45IDAgMCAwIDMuOSAxYTguMSA4LjEgMCAwIDAgMi41Ny0uNDJhMTEyLjEgMTEyLjEgMCAwIDAgMzYuNjgtMjAuNzNhOCA4IDAgMCAwIDIuODMtNi4wN2wuMTUtMzMuNjVsMjkuODMtMTdhOCA4IDAgMCAwIDMuODktNS40YTEwNi41IDEwNi41IDAgMCAwLS4wMy00MS41Mk0xMjggMTY4YTQwIDQwIDAgMSAxIDQwLTQwYTQwIDQwIDAgMCAxLTQwIDQwIi8+PC9zdmc+Cg==)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Manufacturing</div>
+    <div class="nh-tile-blurb">Works orders, BOMs and what to make</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-primary">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjI0IDQ4SDMyYTggOCAwIDAgMC04IDh2MTM2YTE2IDE2IDAgMCAwIDE2IDE2aDE3NmExNiAxNiAwIDAgMCAxNi0xNlY1NmE4IDggMCAwIDAtOC04TTQwIDExMmg0MHYzMkg0MFptNTYgMGgxMjB2MzJIOTZabS01NiA0OGg0MHYzMkg0MFptMTc2IDMySDk2di0zMmgxMjB6Ii8+PC9zdmc+Cg==)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Projects</div>
+    <div class="nh-tile-blurb">Jobs, tasks and what they have cost</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-teal">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjQwIDU2djE0NGE4IDggMCAwIDEtOCA4aC03MmEyNCAyNCAwIDAgMC0yNCAyMy45NGE3LjkgNy45IDAgMCAxLTUuMTIgNy41NUE4IDggMCAwIDEgMTIwIDIzMmEyNCAyNCAwIDAgMC0yNC0yNEgyNGE4IDggMCAwIDEtOC04VjU2YTggOCAwIDAgMSA4LThoNjRhMzIgMzIgMCAwIDEgMzIgMzJ2ODcuNzNhOC4xNyA4LjE3IDAgMCAwIDcuNDcgOC4yNWE4IDggMCAwIDAgOC41My04VjgwYTMyIDMyIDAgMCAxIDMyLTMyaDY0YTggOCAwIDAgMSA4IDgiLz48L3N2Zz4K)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Support</div>
+    <div class="nh-tile-blurb">Tickets raised by your customers</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button></div>
+    <div class="nh-grid nh-grid--ref"><button type="button" class="nh-tile nh-t-amber">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNNjQuMTIgMTQ3LjhhNCA0IDAgMCAxLTQgNC4ySDE2YTggOCAwIDAgMS03LjgtNi4xN2E4LjM1IDguMzUgMCAwIDEgMS42Mi02LjkzQTY3LjggNjcuOCAwIDAgMSAzNyAxMTcuNTFhNDAgNDAgMCAxIDEgNjYuNDYtMzUuOGEzLjk0IDMuOTQgMCAwIDEtMi4yNyA0LjE4QTY0LjA4IDY0LjA4IDAgMCAwIDY0IDE0NGMwIDEuMjggMCAyLjU0LjEyIDMuOG0xODItOC45MUE2Ny43NiA2Ny43NiAwIDAgMCAyMTkgMTE3LjUxYTQwIDQwIDAgMSAwLTY2LjQ2LTM1LjhhMy45NCAzLjk0IDAgMCAwIDIuMjcgNC4xOEE2NC4wOCA2NC4wOCAwIDAgMSAxOTIgMTQ0YzAgMS4yOCAwIDIuNTQtLjEyIDMuOGE0IDQgMCAwIDAgNCA0LjJIMjQwYTggOCAwIDAgMCA3LjgtNi4xN2E4LjMzIDguMzMgMCAwIDAtMS42My02Ljk0Wm0tODkgNDMuMThhNDggNDggMCAxIDAtNTguMzcgMEE3Mi4xMyA3Mi4xMyAwIDAgMCA2NS4wNyAyMTJBOCA4IDAgMCAwIDcyIDIyNGgxMTJhOCA4IDAgMCAwIDYuOTMtMTJhNzIuMTUgNzIuMTUgMCAwIDAtMzMuNzQtMjkuOTNaIi8+PC9zdmc+Cg==)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Customers</div>
+    <div class="nh-tile-blurb">Who you sell to, and their terms</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-primary">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjE2IDQwSDQwYTE2IDE2IDAgMCAwLTE2IDE2djE0NGExNiAxNiAwIDAgMCAxNiAxNmgxNzZhMTYgMTYgMCAwIDAgMTYtMTZWNTZhMTYgMTYgMCAwIDAtMTYtMTZtLTE2IDE1Mkg1NmE4IDggMCAwIDEtOC04VjcyYTggOCAwIDAgMSAxNiAwdjc2LjY5bDM0LjM0LTM0LjM1YTggOCAwIDAgMSAxMS4zMiAwTDEyOCAxMzIuNjlMMTcyLjY5IDg4SDE0NGE4IDggMCAwIDEgMC0xNmg0OGE4IDggMCAwIDEgOCA4djQ4YTggOCAwIDAgMS0xNiAwVjk5LjMxbC01MC4zNCA1MC4zNWE4IDggMCAwIDEtMTEuMzIgMEwxMDQgMTMxLjMxbC00MCA0MFYxNzZoMTM2YTggOCAwIDAgMSAwIDE2Ii8+PC9zdmc+Cg==)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Financial Reports</div>
+    <div class="nh-tile-blurb">Trial balance, P&amp;L and balance sheet</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-teal">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjE2IDQwSDQwYTE2IDE2IDAgMCAwLTE2IDE2djE0NGExNiAxNiAwIDAgMCAxNiAxNmgxNzZhMTYgMTYgMCAwIDAgMTYtMTZWNTZhMTYgMTYgMCAwIDAtMTYtMTZtLTE2IDE1Mkg1NmE4IDggMCAwIDEtOC04VjcyYTggOCAwIDAgMSAxNiAwdjc2LjY5bDM0LjM0LTM0LjM1YTggOCAwIDAgMSAxMS4zMiAwTDEyOCAxMzIuNjlMMTcyLjY5IDg4SDE0NGE4IDggMCAwIDEgMC0xNmg0OGE4IDggMCAwIDEgOCA4djQ4YTggOCAwIDAgMS0xNiAwVjk5LjMxbC01MC4zNCA1MC4zNWE4IDggMCAwIDEtMTEuMzIgMEwxMDQgMTMxLjMxbC00MCA0MFYxNzZoMTM2YTggOCAwIDAgMSAwIDE2Ii8+PC9zdmc+Cg==)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Insights</div>
+    <div class="nh-tile-blurb">Dashboards and your own reports</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-amber">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJtMjIzLjY4IDY2LjE1bC04OC00OC4xNWExNS44OCAxNS44OCAwIDAgMC0xNS4zNiAwbC04OCA0OC4xN2ExNiAxNiAwIDAgMC04LjMyIDE0djk1LjY0YTE2IDE2IDAgMCAwIDguMzIgMTRsODggNDguMTdhMTUuODggMTUuODggMCAwIDAgMTUuMzYgMGw4OC00OC4xN2ExNiAxNiAwIDAgMCA4LjMyLTE0VjgwLjE4YTE2IDE2IDAgMCAwLTguMzItMTQuMDNNMTI4IDMybDgwLjM1IDQ0bC0yOS43OCAxNi4yOWwtODAuMzUtNDRabTAgODhMNDcuNjUgNzZsMzMuOTEtMTguNTdsODAuMzUgNDRabTg4IDU1Ljg1bC04MCA0My43OXYtODUuODFsMzItMTcuNTFWMTUyYTggOCAwIDAgMCAxNiAwdi00NC40NGwzMi0xNy41MXY4NS43NloiLz48L3N2Zz4K)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Assets</div>
+    <div class="nh-tile-blurb">What the business owns and what it is worth</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-primary">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNNjQuMTIgMTQ3LjhhNCA0IDAgMCAxLTQgNC4ySDE2YTggOCAwIDAgMS03LjgtNi4xN2E4LjM1IDguMzUgMCAwIDEgMS42Mi02LjkzQTY3LjggNjcuOCAwIDAgMSAzNyAxMTcuNTFhNDAgNDAgMCAxIDEgNjYuNDYtMzUuOGEzLjk0IDMuOTQgMCAwIDEtMi4yNyA0LjE4QTY0LjA4IDY0LjA4IDAgMCAwIDY0IDE0NGMwIDEuMjggMCAyLjU0LjEyIDMuOG0xODItOC45MUE2Ny43NiA2Ny43NiAwIDAgMCAyMTkgMTE3LjUxYTQwIDQwIDAgMSAwLTY2LjQ2LTM1LjhhMy45NCAzLjk0IDAgMCAwIDIuMjcgNC4xOEE2NC4wOCA2NC4wOCAwIDAgMSAxOTIgMTQ0YzAgMS4yOCAwIDIuNTQtLjEyIDMuOGE0IDQgMCAwIDAgNCA0LjJIMjQwYTggOCAwIDAgMCA3LjgtNi4xN2E4LjMzIDguMzMgMCAwIDAtMS42My02Ljk0Wm0tODkgNDMuMThhNDggNDggMCAxIDAtNTguMzcgMEE3Mi4xMyA3Mi4xMyAwIDAgMCA2NS4wNyAyMTJBOCA4IDAgMCAwIDcyIDIyNGgxMTJhOCA4IDAgMCAwIDYuOTMtMTJhNzIuMTUgNzIuMTUgMCAwIDAtMzMuNzQtMjkuOTNaIi8+PC9zdmc+Cg==)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Users</div>
+    <div class="nh-tile-blurb">Who can sign in, and what they may do</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-t-teal">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjM3Ljk0IDEwNy4yMWE4IDggMCAwIDAtMy44OS01LjRsLTI5LjgzLTE3bC0uMTItMzMuNjJhOCA4IDAgMCAwLTIuODMtNi4wOGExMTEuOSAxMTEuOSAwIDAgMC0zNi43Mi0yMC42N2E4IDggMCAwIDAtNi40Ni41OUwxMjggNDEuODVMOTcuODggMjVhOCA4IDAgMCAwLTYuNDctLjZhMTExLjkgMTExLjkgMCAwIDAtMzYuNjggMjAuNzVhOCA4IDAgMCAwLTIuODMgNi4wN2wtLjE1IDMzLjY1bC0yOS44MyAxN2E4IDggMCAwIDAtMy44OSA1LjRhMTA2LjUgMTA2LjUgMCAwIDAgMCA0MS41NmE4IDggMCAwIDAgMy44OSA1LjRsMjkuODMgMTdsLjEyIDMzLjYzYTggOCAwIDAgMCAyLjgzIDYuMDhhMTExLjkgMTExLjkgMCAwIDAgMzYuNzIgMjAuNjdhOCA4IDAgMCAwIDYuNDYtLjU5TDEyOCAyMTQuMTVMMTU4LjEyIDIzMWE3LjkgNy45IDAgMCAwIDMuOSAxYTguMSA4LjEgMCAwIDAgMi41Ny0uNDJhMTEyLjEgMTEyLjEgMCAwIDAgMzYuNjgtMjAuNzNhOCA4IDAgMCAwIDIuODMtNi4wN2wuMTUtMzMuNjVsMjkuODMtMTdhOCA4IDAgMCAwIDMuODktNS40YTEwNi41IDEwNi41IDAgMCAwLS4wMy00MS41Mk0xMjggMTY4YTQwIDQwIDAgMSAxIDQwLTQwYTQwIDQwIDAgMCAxLTQwIDQwIi8+PC9zdmc+Cg==)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Settings</div>
+    <div class="nh-tile-blurb">Company, tax, naming and defaults</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button></div>
+  </div>
 
-      <button type="button" class="nh-tile nh-tile--lg nh-t-primary" data-route="point-of-sale">
-        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNNiAyIDMgNnYxNGEyIDIgMCAwIDAgMiAyaDE0YTIgMiAwIDAgMCAyLTJWNmwtMy00eiIvPjxwYXRoIGQ9Ik0zIDZoMTgiLz48cGF0aCBkPSJNMTYgMTBhNCA0IDAgMCAxLTggMCIvPjwvc3ZnPgo=" alt="" loading="lazy"></span>
-        <span class="nh-tile-body">
-          <div class="nh-tile-label">Point of Sale</div>
-          <div class="nh-tile-blurb">Open the till and take a sale</div>
-        </span>
-        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
-      </button>
-
-      <button type="button" class="nh-tile nh-tile--lg nh-t-teal" data-route="new/Stock Entry">
-        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNOCAzIDQgN2w0IDQiLz48cGF0aCBkPSJNNCA3aDE2Ii8+PHBhdGggZD0iTTE2IDIxbDQtNC00LTQiLz48cGF0aCBkPSJNMjAgMTdINCIvPjwvc3ZnPgo=" alt="" loading="lazy"></span>
-        <span class="nh-tile-body">
-          <div class="nh-tile-label">Warehouse Transfer</div>
-          <div class="nh-tile-blurb">Move stock between warehouses</div>
-        </span>
-        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
-      </button>
-
-      <button type="button" class="nh-tile nh-t-amber" data-route="List/Sales Invoice">
-        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTQgMkg2YTIgMiAwIDAgMC0yIDJ2MTZhMiAyIDAgMCAwIDIgMmgxMmEyIDIgMCAwIDAgMi0yVjh6Ii8+PHBhdGggZD0iTTE0IDJ2Nmg2Ii8+PHBhdGggZD0iTTkgMTNoNiIvPjxwYXRoIGQ9Ik05IDE3aDQiLz48L3N2Zz4K" alt="" loading="lazy"></span>
-        <span class="nh-tile-body"><div class="nh-tile-label">New Sales Invoice</div></span>
-        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
-      </button>
-
-      <button type="button" class="nh-tile nh-t-primary" data-route="List/Customer">
-        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMjAgMjF2LTJhNCA0IDAgMCAwLTQtNEg4YTQgNCAwIDAgMC00IDR2MiIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iNyIgcj0iNCIvPjwvc3ZnPgo=" alt="" loading="lazy"></span>
-        <span class="nh-tile-body"><div class="nh-tile-label">Customers</div></span>
-        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
-      </button>
-
-      <button type="button" class="nh-tile nh-t-teal" data-route="List/Item">
-        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2IiByeD0iMSIvPjxyZWN0IHg9IjE0IiB5PSI0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2IiByeD0iMSIvPjxyZWN0IHg9IjQiIHk9IjE0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2IiByeD0iMSIvPjxyZWN0IHg9IjE0IiB5PSIxNCIgd2lkdGg9IjYiIGhlaWdodD0iNiIgcng9IjEiLz48L3N2Zz4K" alt="" loading="lazy"></span>
-        <span class="nh-tile-body"><div class="nh-tile-label">Items</div></span>
-        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
-      </button>
-
-      <button type="button" class="nh-tile nh-t-amber" data-route="query-report/Stock Ledger">
-        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMyAzdjE4aDE4Ii8+PHBhdGggZD0iTTcgMTVsNC01IDMgMyA1LTciLz48L3N2Zz4K" alt="" loading="lazy"></span>
-        <span class="nh-tile-body"><div class="nh-tile-label">Stock Ledger</div></span>
-        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
-      </button>
-
-    </div>
+  <div id="nh-also">
+    <div class="nh-band"><h2>Also here</h2><div class="nh-rule"></div></div>
+    <div class="nh-also-row"><button type="button" class="nh-tile nh-tile--sm nh-t-primary">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjMxLjY5IDkzLjgxTDIxNy4zNSA0My42QTE2LjA3IDE2LjA3IDAgMCAwIDIwMiAzMkg1NGExNi4wNyAxNi4wNyAwIDAgMC0xNS4zNSAxMS42TDI0LjMxIDkzLjgxQTggOCAwIDAgMCAyNCA5NnYxNmE0MCA0MCAwIDAgMCAxNiAzMnY3MmE4IDggMCAwIDAgOCA4aDE2MGE4IDggMCAwIDAgOC04di03MmE0MCA0MCAwIDAgMCAxNi0zMlY5NmE4IDggMCAwIDAtLjMxLTIuMTlNODggMTEyYTI0IDI0IDAgMCAxLTM1LjEyIDIxLjI2YTggOCAwIDAgMC0xLjgyLTEuMDZBMjQgMjQgMCAwIDEgNDAgMTEydi04aDQ4Wm02NCAwYTI0IDI0IDAgMCAxLTQ4IDB2LThoNDhabTY0IDBhMjQgMjQgMCAwIDEtMTEuMDcgMjAuMmE4IDggMCAwIDAtMS44IDEuMDVBMjQgMjQgMCAwIDEgMTY4IDExMnYtOGg0OFoiLz48L3N2Zz4K)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Mobile screens</div>
+    <div class="nh-tile-blurb">Scan, count and confirm on a phone or tablet</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button>
+<button type="button" class="nh-tile nh-tile--sm nh-t-teal">
+  <span class="nh-tile-icon"><span class="nh-ico" style="--ico:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2IiB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNMjQwIDU2djE0NGE4IDggMCAwIDEtOCA4aC03MmEyNCAyNCAwIDAgMC0yNCAyMy45NGE3LjkgNy45IDAgMCAxLTUuMTIgNy41NUE4IDggMCAwIDEgMTIwIDIzMmEyNCAyNCAwIDAgMC0yNC0yNEgyNGE4IDggMCAwIDEtOC04VjU2YTggOCAwIDAgMSA4LThoNjRhMzIgMzIgMCAwIDEgMzIgMzJ2ODcuNzNhOC4xNyA4LjE3IDAgMCAwIDcuNDcgOC4yNWE4IDggMCAwIDAgOC41My04VjgwYTMyIDMyIDAgMCAxIDMyLTMyaDY0YTggOCAwIDAgMSA4IDgiLz48L3N2Zz4K)"></span></span>
+  <span class="nh-tile-body">
+    <div class="nh-tile-label">Guides</div>
+    <div class="nh-tile-blurb">How to do each of these, step by step</div>
+  </span>
+  <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+</button></div>
   </div>
 
   <div class="nh-band"><h2>Needs your attention</h2><div class="nh-rule"></div></div>
-  <div class="nh-lists" id="nh-lists">
-
-    <section class="nh-list nh-t-primary" id="nh-list-A" aria-label="My Activities">
-      <div class="nh-list-head">
-        <div>
-          <div class="nh-list-title"><span class="nh-dot"></span>My Activities</div>
-          <div class="nh-list-sub">Do these</div>
-        </div>
-        <span class="nh-count" id="nh-count-A">6</span>
-        <div class="nh-list-tools">
-          <input type="text" class="nh-filter" placeholder="Filter by contact or company&hellip;" autocomplete="off">
-          <select class="nh-sort" title="Sort">
-            <option value="date">Due date</option>
-            <option value="contact">Contact A-Z</option>
-            <option value="company">Company A-Z</option>
-          </select>
-        </div>
-      </div>
-      <div class="nh-list-body" id="nh-body-A">
-        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Bright Star Trading</div><div class="nh-item-sub">Call back re: glaze order</div></div><div class="nh-item-right"><span class="nh-due nh-due-over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.01"></path></svg>18-09-2026</span></div></div>
-        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Kirsten Meyer</div><div class="nh-item-sub">Send revised quotation</div></div><div class="nh-item-right"><span class="nh-due nh-due-over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.01"></path></svg>21-09-2026</span></div></div>
-        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Umhlanga Gallery</div><div class="nh-item-sub">Confirm delivery slot</div></div><div class="nh-item-right"><span class="nh-due">23-09-2026</span></div></div>
-        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Delta Interiors</div><div class="nh-item-sub">Chase proof of payment</div></div><div class="nh-item-right"><span class="nh-due">25-09-2026</span></div></div>
-        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Arbor Care</div></div><div class="nh-item-right"><span class="nh-due nh-due-none">No date</span></div></div>
-      </div>
-    </section>
-
-    <section class="nh-list nh-t-amber" id="nh-list-B" aria-label="Awaiting My Action">
-      <div class="nh-list-head">
-        <div>
-          <div class="nh-list-title"><span class="nh-dot"></span>Awaiting My Action</div>
-          <div class="nh-list-sub">Your call</div>
-        </div>
-        <span class="nh-count" id="nh-count-B">3</span>
-      </div>
-      <div class="nh-list-body" id="nh-body-B">
-        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">PUR-ORD-2026-00412</div><div class="nh-item-sub">Purchase Order &middot; Draft</div></div><div class="nh-item-right"><span class="nh-due">22-09-2026</span></div></div>
-        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">SAL-ORD-2026-01188</div><div class="nh-item-sub">Sales Order &middot; Draft</div></div><div class="nh-item-right"><span class="nh-due">23-09-2026</span></div></div>
-        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">MFG-WO-2026-0077</div><div class="nh-item-sub">Work Order &middot; Draft</div></div><div class="nh-item-right"><span class="nh-due">24-09-2026</span></div></div>
-      </div>
-    </section>
-
-    <section class="nh-list nh-t-teal" id="nh-list-C" aria-label="Waiting On Others">
-      <div class="nh-list-head">
-        <div>
-          <div class="nh-list-title"><span class="nh-dot"></span>Waiting On Others</div>
-          <div class="nh-list-sub">Chase these</div>
-        </div>
-        <span class="nh-count nh-zero" id="nh-count-C">0</span>
-      </div>
-      <div class="nh-list-body" id="nh-body-C">
-        <div class="nh-empty">
-          <div class="nh-empty-check">&#10003;</div>
-          <div class="nh-empty-title">Nothing outstanding</div>
-          <div class="nh-empty-msg">No one owes you anything right now.</div>
-        </div>
-      </div>
-    </section>
-
+  <div class="nh-lists"><section class="nh-list nh-t-primary">
+  <div class="nh-list-head">
+    <div><div class="nh-list-title"><span class="nh-dot"></span>My Activities</div>
+    <div class="nh-list-sub">Do these</div></div>
+    <span class="nh-count">4</span>
   </div>
-
-  <div class="nh-footer">
-    <span class="nh-powered">Powered by</span>
-    <span class="nh-nest-name">NestERP</span>
+  <div class="nh-list-body"><div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Bright Star Trading</div><div class="nh-item-sub">Call back re: glaze order</div></div><div class="nh-item-right"><span class="nh-due nh-due-over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.01"></path></svg>18-09-2026</span></div></div>
+<div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Kirsten Meyer</div><div class="nh-item-sub">Send revised quotation</div></div><div class="nh-item-right"><span class="nh-due nh-due-over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.01"></path></svg>21-09-2026</span></div></div>
+<div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Umhlanga Gallery</div><div class="nh-item-sub">Confirm delivery slot</div></div><div class="nh-item-right"><span class="nh-due">28-09-2026</span></div></div>
+<div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Delta Interiors</div><div class="nh-item-sub">Chase proof of payment</div></div><div class="nh-item-right"><span class="nh-due">30-09-2026</span></div></div></div>
+</section><section class="nh-list nh-t-amber">
+  <div class="nh-list-head">
+    <div><div class="nh-list-title"><span class="nh-dot"></span>Awaiting My Action</div>
+    <div class="nh-list-sub">Your call</div></div>
+    <span class="nh-count">236</span>
   </div>
+  <div class="nh-list-body"><div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">PUR-ORD-2026-00412</div><div class="nh-item-sub">Purchase Order &middot; Draft</div></div><div class="nh-item-right"><span class="nh-due">22-09-2026</span></div></div><div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">SAL-ORD-2026-01188</div><div class="nh-item-sub">Sales Order &middot; Draft</div></div><div class="nh-item-right"><span class="nh-due">28-09-2026</span></div></div></div>
+</section><section class="nh-list nh-t-teal">
+  <div class="nh-list-head">
+    <div><div class="nh-list-title"><span class="nh-dot"></span>Waiting On Others</div>
+    <div class="nh-list-sub">Chase these</div></div>
+    <span class="nh-count nh-zero">0</span>
+  </div>
+  <div class="nh-list-body"><div class="nh-empty"><div class="nh-empty-check">&#10003;</div><div class="nh-empty-title">Nothing outstanding</div><div class="nh-empty-msg">No one owes you anything right now.</div></div></div>
+</section></div>
+
+  <div class="nh-footer"><span class="nh-powered">Powered by</span><span class="nh-nest-name">NestERP</span></div>
 </div>
 </div>
 

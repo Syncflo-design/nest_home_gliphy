@@ -17,11 +17,7 @@
 
 .nh-app {
   /* -- Surfaces + ink --------------------------------------------------- */
-  /* The header slab is NestERP's own slate-blue, not a near-black. #4a6580 is
-     the darker of the two tones in the Nest mark (the lighter is #6b85a3) and
-     the `--primary-hover` of nest_theme's Soft Professional palette, so the
-     page reads as the same family as the rest of the desk. */
-  --ink: #4a6580;
+  --ink: #0F172A;
   --canvas: var(--bg-color, #EEF2F7);
   --card: var(--card-bg, #FFFFFF);
   --line: var(--border-color, #E2E8F0);
@@ -60,8 +56,7 @@
 /* Dark: desaturated tonal variants, not inverted hues. Contrast re-checked
    against --card rather than assumed from the light values. */
 html[data-theme="dark"] .nh-app {
-  /* The same slate-blue, dropped to a depth that sits on a dark canvas. */
-  --ink: #2C3E52;
+  --ink: #0B1220;
   --canvas: var(--bg-color, #0B0F17);
   --card: var(--card-bg, #141B26);
   --line: var(--border-color, #26303F);
@@ -103,13 +98,10 @@ html[data-theme="dark"] .nh-app {
   position: relative; overflow: hidden;
 }
 
-/* One hairline of accent along the top edge - the only ornament on the bar.
-   Retuned to the nest_theme Soft Professional trio (slate-blue, sage, warm
-   taupe) now the slab itself is brand slate-blue; the old blue/teal/amber
-   read as a third palette sitting on top of the other two. */
+/* One hairline of accent along the top edge - the only ornament on the bar. */
 .nh-bar::before {
   content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
-  background: linear-gradient(90deg, #6b85a3 0%, #82a085 50%, #c4a373 100%);
+  background: linear-gradient(90deg, #2563EB 0%, #0F766E 50%, #D97706 100%);
 }
 
 .nh-bar :focus-visible { outline-color: #fff; }
@@ -230,21 +222,14 @@ html[data-theme="dark"] .nh-app {
 .nh-tile--lg .nh-tile-icon { width: 40px; height: 40px; }
 .nh-tile-icon svg { width: 19px; height: 19px; }
 .nh-tile--lg .nh-tile-icon svg { width: 21px; height: 21px; }
-
-/* The shipped glyphs are painted through a mask rather than drawn as an image,
-   so they take the tile's accent colour and need no dark-mode correction. An
-   <img> cannot inherit currentColor; a mask uses the file's shape only. */
-.nh-ico {
-  display: block; width: 20px; height: 20px;
-  background-color: currentColor;
-  -webkit-mask: var(--ico) center / contain no-repeat;
-  mask: var(--ico) center / contain no-repeat;
-}
-.nh-tile--lg .nh-ico { width: 22px; height: 22px; }
-
-/* A customer's own uploaded artwork stays an image, at its own colours. */
 .nh-tile-icon img { height: 20px; width: 20px; object-fit: contain; }
 .nh-tile--lg .nh-tile-icon img { height: 22px; width: 22px; }
+/* The shipped icons are dark-stroked files, so they need flipping on a dark
+   chip. An <img> cannot inherit currentColor - this is the cheap way until
+   the real icon set arrives. */
+html[data-theme="dark"] .nh-tile-icon img { filter: invert(1) brightness(1.6); }
+/* An uploaded customer icon is not ours to recolour. */
+html[data-theme="dark"] .nh-tile-icon-img img { filter: none; }
 .nh-tile-icon-img { line-height: 0; background: transparent; }
 
 .nh-tile-body { min-width: 0; flex: 1; }

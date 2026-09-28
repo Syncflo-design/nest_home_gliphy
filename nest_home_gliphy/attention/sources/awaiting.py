@@ -118,7 +118,15 @@ def _rule_items(rule, user, limit):
     wanted = list(dict.fromkeys(wanted))  # de-dupe, keep order
 
     filters = {"docstatus": rule.get("docstatus", 0)}
-    filters.update(rule.get("extra_filters") or {})
+    # Only apply an extra filter when the field actually exists on this site.
+    # These gates are usually a custom field belonging to one client — the
+    # Sales Invoice "ready for approval" flag, for example. On a site without
+    # it, Frappe raises "You do not have permission to access field: X" and the
+    # whole landing page fails. A filter that cannot apply should simply not
+    # apply; the rule then falls back to "any draft I can submit".
+    for fieldname, value in (rule.get("extra_filters") or {}).items():
+        if meta.has_field(fieldname):
+            filters[fieldname] = value
 
     rows = frappe.get_list(
         dt,

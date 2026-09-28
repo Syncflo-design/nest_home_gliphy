@@ -1,3 +1,10 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nest Home Gliphy — preview</title>
+<style>
 /* ===========================================================================
    nest_home_gliphy — landing page stylesheet (v2 "gliphy" look).
 
@@ -17,11 +24,7 @@
 
 .nh-app {
   /* -- Surfaces + ink --------------------------------------------------- */
-  /* The header slab is NestERP's own slate-blue, not a near-black. #4a6580 is
-     the darker of the two tones in the Nest mark (the lighter is #6b85a3) and
-     the `--primary-hover` of nest_theme's Soft Professional palette, so the
-     page reads as the same family as the rest of the desk. */
-  --ink: #4a6580;
+  --ink: #0F172A;
   --canvas: var(--bg-color, #EEF2F7);
   --card: var(--card-bg, #FFFFFF);
   --line: var(--border-color, #E2E8F0);
@@ -60,8 +63,7 @@
 /* Dark: desaturated tonal variants, not inverted hues. Contrast re-checked
    against --card rather than assumed from the light values. */
 html[data-theme="dark"] .nh-app {
-  /* The same slate-blue, dropped to a depth that sits on a dark canvas. */
-  --ink: #2C3E52;
+  --ink: #0B1220;
   --canvas: var(--bg-color, #0B0F17);
   --card: var(--card-bg, #141B26);
   --line: var(--border-color, #26303F);
@@ -103,13 +105,10 @@ html[data-theme="dark"] .nh-app {
   position: relative; overflow: hidden;
 }
 
-/* One hairline of accent along the top edge - the only ornament on the bar.
-   Retuned to the nest_theme Soft Professional trio (slate-blue, sage, warm
-   taupe) now the slab itself is brand slate-blue; the old blue/teal/amber
-   read as a third palette sitting on top of the other two. */
+/* One hairline of accent along the top edge - the only ornament on the bar. */
 .nh-bar::before {
   content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
-  background: linear-gradient(90deg, #6b85a3 0%, #82a085 50%, #c4a373 100%);
+  background: linear-gradient(90deg, #2563EB 0%, #0F766E 50%, #D97706 100%);
 }
 
 .nh-bar :focus-visible { outline-color: #fff; }
@@ -168,35 +167,15 @@ html[data-theme="dark"] .nh-app {
   background: var(--line); border-radius: 999px; padding: 2px var(--s-2);
 }
 
-/* -- Tile grid ----------------------------------------------------------- */
-/* Auto-fill rather than a fixed four, so a tile stays the same size whether
-   there are five of them or twenty, and the row simply wraps. 240px is the
-   width at which a two-line blurb still reads at 125% browser zoom. */
+/* -- Bento tile grid: four columns, tiles with a blurb span two. --------- */
 
 .nh-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--s-3); margin-bottom: var(--s-6);
-}
-
-/* The reference row: what you look up rather than do. A rule and some air so
-   the row above reads as a complete set of actions. */
-.nh-grid--ref {
-  padding-top: var(--s-4);
-  border-top: 1px solid var(--line);
-  margin-bottom: var(--s-8);
-}
-
-/* "Also here": the phone screens, the guides, how to ask for help. Same card
-   grammar, smaller, and no accent rail so it stays subordinate. */
-.nh-also-row {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  display: grid; grid-template-columns: repeat(4, 1fr);
   gap: var(--s-3); margin-bottom: var(--s-8);
 }
-.nh-also-row .nh-tile { padding-left: var(--s-4); box-shadow: none; }
-.nh-also-row .nh-tile::before { content: none; }
 
 .nh-tile {
-  position: relative; display: flex; gap: var(--s-3); align-items: flex-start;
+  position: relative; display: flex; gap: var(--s-3); align-items: center;
   background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
   box-shadow: var(--e1);
   padding: var(--s-3) var(--s-4) var(--s-3) var(--s-6);
@@ -216,10 +195,10 @@ html[data-theme="dark"] .nh-app {
 .nh-tile:hover::before { width: 6px; }
 .nh-tile:active { transform: translateY(0); }
 
-/* Kept for a tile that should read as the one primary action on a screen.
-   Not applied automatically any more - every action tile carries a blurb now,
-   so sizing by "has a description" would have made the whole grid two-wide. */
-.nh-tile--lg { grid-column: span 2; }
+.nh-tile--lg {
+  grid-column: span 2; align-items: flex-start;
+  padding-top: var(--s-4); padding-bottom: var(--s-4);
+}
 
 .nh-tile-icon {
   flex: 0 0 auto; width: 36px; height: 36px; border-radius: var(--r-sm);
@@ -230,36 +209,23 @@ html[data-theme="dark"] .nh-app {
 .nh-tile--lg .nh-tile-icon { width: 40px; height: 40px; }
 .nh-tile-icon svg { width: 19px; height: 19px; }
 .nh-tile--lg .nh-tile-icon svg { width: 21px; height: 21px; }
-
-/* The shipped glyphs are painted through a mask rather than drawn as an image,
-   so they take the tile's accent colour and need no dark-mode correction. An
-   <img> cannot inherit currentColor; a mask uses the file's shape only. */
-.nh-ico {
-  display: block; width: 20px; height: 20px;
-  background-color: currentColor;
-  -webkit-mask: var(--ico) center / contain no-repeat;
-  mask: var(--ico) center / contain no-repeat;
-}
-.nh-tile--lg .nh-ico { width: 22px; height: 22px; }
-
-/* A customer's own uploaded artwork stays an image, at its own colours. */
 .nh-tile-icon img { height: 20px; width: 20px; object-fit: contain; }
 .nh-tile--lg .nh-tile-icon img { height: 22px; width: 22px; }
+/* The shipped icons are dark-stroked files, so they need flipping on a dark
+   chip. An <img> cannot inherit currentColor - this is the cheap way until
+   the real icon set arrives. */
+html[data-theme="dark"] .nh-tile-icon img { filter: invert(1) brightness(1.6); }
+/* An uploaded customer icon is not ours to recolour. */
+html[data-theme="dark"] .nh-tile-icon-img img { filter: none; }
 .nh-tile-icon-img { line-height: 0; background: transparent; }
 
 .nh-tile-body { min-width: 0; flex: 1; }
 .nh-tile-label { font-size: var(--fs-lg); font-weight: 600; line-height: 1.35; }
 .nh-tile-blurb {
   font-size: var(--fs-sm); color: var(--muted); line-height: 1.45; margin-top: 2px;
-  /* Two lines, always. Grid rows stretch to their tallest card, so one blurb
-     running to three lines made every card in that row taller - the whole row
-     paying for one tile's wording. Reserving the space keeps rows level. */
-  min-height: 2.9em;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
   line-clamp: 2; overflow: hidden;
 }
-/* A tile with no blurb should not reserve the space for one. */
-.nh-tile:not(:has(.nh-tile-blurb)) { align-items: center; }
 
 .nh-chev { margin-left: auto; align-self: center; color: var(--muted); flex: 0 0 auto; opacity: .6; }
 .nh-chev svg { width: 16px; height: 16px; }
@@ -395,3 +361,179 @@ html[data-theme="dark"] .nh-app {
   }
   .nh-tile:hover { transform: none; }
 }
+
+</style>
+<style>
+  body { margin:0; padding:24px; background:#EEF2F7; color:#0F172A;
+         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  html[data-theme="dark"] body { background:#0B0F17; color:#E6EBF2; }
+  .nh-sw { position:fixed; right:18px; bottom:18px; z-index:40; display:flex; gap:4px;
+           background:#fff; border:1px solid #E2E8F0; border-radius:999px; padding:4px;
+           box-shadow:0 8px 24px rgba(15,23,42,.10); }
+  html[data-theme="dark"] .nh-sw { background:#141B26; border-color:#26303F; }
+  .nh-sw button { border:0; background:transparent; color:#5B6676; font:inherit; font-size:12px;
+                  font-weight:500; padding:4px 12px; border-radius:999px; cursor:pointer; }
+  html[data-theme="dark"] .nh-sw button { color:#94A3B8; }
+  .nh-sw button[aria-pressed="true"] { background:#0F172A; color:#fff; }
+  html[data-theme="dark"] .nh-sw button[aria-pressed="true"] { background:#93B4F5; color:#0B1220; }
+</style>
+</head>
+<body>
+<!-- Markup mirrors exactly what nest_home_gliphy.js emits, against the shipped CSS. -->
+<div class="nest-home-gliphy-root">
+<div class="nh-app">
+  <div class="nh-bar">
+    <div class="nh-bar-left">
+      <span id="nh-logo-slot"><span class="nh-logo-fallback">R</span></span>
+      <div class="nh-bar-titles">
+        <div class="nh-title" id="nh-title">Nest Home Gliphy</div>
+        <div class="nh-greeting" id="nh-greeting">Welcome back, Russell Stroebel.</div>
+      </div>
+    </div>
+    <div class="nh-bar-right">
+      <div class="nh-clockwrap">
+        <div class="nh-clock" id="nh-clock">08:42</div>
+        <div class="nh-date" id="nh-date">Wed, 23 Sep</div>
+      </div>
+      <img class="nh-header-nest" src="../../../../../../../ClaudeCode/x.svg" alt="" style="display:none;">
+      <div class="nh-header-actions">
+        <button class="nh-hbtn" title="Home" aria-label="Home">&#8962;</button>
+        <button class="nh-hbtn" title="Refresh" aria-label="Refresh">&#8635;</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="nh-left">
+    <div class="nh-band"><h2>Quick launch</h2><div class="nh-rule"></div><span class="nh-n" id="nh-tile-count">6</span></div>
+    <div class="nh-grid" id="nh-tiles">
+
+      <button type="button" class="nh-tile nh-tile--lg nh-t-primary" data-route="point-of-sale">
+        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNNiAyIDMgNnYxNGEyIDIgMCAwIDAgMiAyaDE0YTIgMiAwIDAgMCAyLTJWNmwtMy00eiIvPjxwYXRoIGQ9Ik0zIDZoMTgiLz48cGF0aCBkPSJNMTYgMTBhNCA0IDAgMCAxLTggMCIvPjwvc3ZnPgo=" alt="" loading="lazy"></span>
+        <span class="nh-tile-body">
+          <div class="nh-tile-label">Point of Sale</div>
+          <div class="nh-tile-blurb">Open the till and take a sale</div>
+        </span>
+        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+      </button>
+
+      <button type="button" class="nh-tile nh-tile--lg nh-t-teal" data-route="new/Stock Entry">
+        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNOCAzIDQgN2w0IDQiLz48cGF0aCBkPSJNNCA3aDE2Ii8+PHBhdGggZD0iTTE2IDIxbDQtNC00LTQiLz48cGF0aCBkPSJNMjAgMTdINCIvPjwvc3ZnPgo=" alt="" loading="lazy"></span>
+        <span class="nh-tile-body">
+          <div class="nh-tile-label">Warehouse Transfer</div>
+          <div class="nh-tile-blurb">Move stock between warehouses</div>
+        </span>
+        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+      </button>
+
+      <button type="button" class="nh-tile nh-t-amber" data-route="List/Sales Invoice">
+        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTQgMkg2YTIgMiAwIDAgMC0yIDJ2MTZhMiAyIDAgMCAwIDIgMmgxMmEyIDIgMCAwIDAgMi0yVjh6Ii8+PHBhdGggZD0iTTE0IDJ2Nmg2Ii8+PHBhdGggZD0iTTkgMTNoNiIvPjxwYXRoIGQ9Ik05IDE3aDQiLz48L3N2Zz4K" alt="" loading="lazy"></span>
+        <span class="nh-tile-body"><div class="nh-tile-label">New Sales Invoice</div></span>
+        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+      </button>
+
+      <button type="button" class="nh-tile nh-t-primary" data-route="List/Customer">
+        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMjAgMjF2LTJhNCA0IDAgMCAwLTQtNEg4YTQgNCAwIDAgMC00IDR2MiIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iNyIgcj0iNCIvPjwvc3ZnPgo=" alt="" loading="lazy"></span>
+        <span class="nh-tile-body"><div class="nh-tile-label">Customers</div></span>
+        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+      </button>
+
+      <button type="button" class="nh-tile nh-t-teal" data-route="List/Item">
+        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2IiByeD0iMSIvPjxyZWN0IHg9IjE0IiB5PSI0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2IiByeD0iMSIvPjxyZWN0IHg9IjQiIHk9IjE0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2IiByeD0iMSIvPjxyZWN0IHg9IjE0IiB5PSIxNCIgd2lkdGg9IjYiIGhlaWdodD0iNiIgcng9IjEiLz48L3N2Zz4K" alt="" loading="lazy"></span>
+        <span class="nh-tile-body"><div class="nh-tile-label">Items</div></span>
+        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+      </button>
+
+      <button type="button" class="nh-tile nh-t-amber" data-route="query-report/Stock Ledger">
+        <span class="nh-tile-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMyAzdjE4aDE4Ii8+PHBhdGggZD0iTTcgMTVsNC01IDMgMyA1LTciLz48L3N2Zz4K" alt="" loading="lazy"></span>
+        <span class="nh-tile-body"><div class="nh-tile-label">Stock Ledger</div></span>
+        <span class="nh-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></span>
+      </button>
+
+    </div>
+  </div>
+
+  <div class="nh-band"><h2>Needs your attention</h2><div class="nh-rule"></div></div>
+  <div class="nh-lists" id="nh-lists">
+
+    <section class="nh-list nh-t-primary" id="nh-list-A" aria-label="My Activities">
+      <div class="nh-list-head">
+        <div>
+          <div class="nh-list-title"><span class="nh-dot"></span>My Activities</div>
+          <div class="nh-list-sub">Do these</div>
+        </div>
+        <span class="nh-count" id="nh-count-A">6</span>
+        <div class="nh-list-tools">
+          <input type="text" class="nh-filter" placeholder="Filter by contact or company&hellip;" autocomplete="off">
+          <select class="nh-sort" title="Sort">
+            <option value="date">Due date</option>
+            <option value="contact">Contact A-Z</option>
+            <option value="company">Company A-Z</option>
+          </select>
+        </div>
+      </div>
+      <div class="nh-list-body" id="nh-body-A">
+        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Bright Star Trading</div><div class="nh-item-sub">Call back re: glaze order</div></div><div class="nh-item-right"><span class="nh-due nh-due-over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.01"></path></svg>18-09-2026</span></div></div>
+        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Kirsten Meyer</div><div class="nh-item-sub">Send revised quotation</div></div><div class="nh-item-right"><span class="nh-due nh-due-over"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.01"></path></svg>21-09-2026</span></div></div>
+        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Umhlanga Gallery</div><div class="nh-item-sub">Confirm delivery slot</div></div><div class="nh-item-right"><span class="nh-due">23-09-2026</span></div></div>
+        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Delta Interiors</div><div class="nh-item-sub">Chase proof of payment</div></div><div class="nh-item-right"><span class="nh-due">25-09-2026</span></div></div>
+        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">Arbor Care</div></div><div class="nh-item-right"><span class="nh-due nh-due-none">No date</span></div></div>
+      </div>
+    </section>
+
+    <section class="nh-list nh-t-amber" id="nh-list-B" aria-label="Awaiting My Action">
+      <div class="nh-list-head">
+        <div>
+          <div class="nh-list-title"><span class="nh-dot"></span>Awaiting My Action</div>
+          <div class="nh-list-sub">Your call</div>
+        </div>
+        <span class="nh-count" id="nh-count-B">3</span>
+      </div>
+      <div class="nh-list-body" id="nh-body-B">
+        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">PUR-ORD-2026-00412</div><div class="nh-item-sub">Purchase Order &middot; Draft</div></div><div class="nh-item-right"><span class="nh-due">22-09-2026</span></div></div>
+        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">SAL-ORD-2026-01188</div><div class="nh-item-sub">Sales Order &middot; Draft</div></div><div class="nh-item-right"><span class="nh-due">23-09-2026</span></div></div>
+        <div class="nh-item" tabindex="0"><div class="nh-item-main"><div class="nh-item-title">MFG-WO-2026-0077</div><div class="nh-item-sub">Work Order &middot; Draft</div></div><div class="nh-item-right"><span class="nh-due">24-09-2026</span></div></div>
+      </div>
+    </section>
+
+    <section class="nh-list nh-t-teal" id="nh-list-C" aria-label="Waiting On Others">
+      <div class="nh-list-head">
+        <div>
+          <div class="nh-list-title"><span class="nh-dot"></span>Waiting On Others</div>
+          <div class="nh-list-sub">Chase these</div>
+        </div>
+        <span class="nh-count nh-zero" id="nh-count-C">0</span>
+      </div>
+      <div class="nh-list-body" id="nh-body-C">
+        <div class="nh-empty">
+          <div class="nh-empty-check">&#10003;</div>
+          <div class="nh-empty-title">Nothing outstanding</div>
+          <div class="nh-empty-msg">No one owes you anything right now.</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="nh-footer">
+    <span class="nh-powered">Powered by</span>
+    <span class="nh-nest-name">NestERP</span>
+  </div>
+</div>
+</div>
+
+<div class="nh-sw">
+  <button type="button" data-t="light" aria-pressed="true">Light</button>
+  <button type="button" data-t="dark" aria-pressed="false">Dark</button>
+</div>
+<script>
+document.querySelectorAll(".nh-sw button").forEach(function (b) {
+  b.addEventListener("click", function () {
+    document.documentElement.setAttribute("data-theme", b.dataset.t);
+    document.querySelectorAll(".nh-sw button").forEach(function (x) {
+      x.setAttribute("aria-pressed", String(x === b));
+    });
+  });
+});
+</script>
+</body>
+</html>

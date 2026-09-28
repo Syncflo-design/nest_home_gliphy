@@ -15,46 +15,62 @@ ADMIN_LAYOUT_NAME = "Administrator"
 
 # Standard tile library. The admin layout uses the _ADMIN_TILES subset;
 # the full library is available for any layout via build_profile_view.
-# (label, route, icon, colour)
+#
+# (label, route, icon, colour, blurb, group)
+#
+# `icon` names a file in public/images/icons/ where one exists; anything else
+# falls back to the Font Awesome class it always was.
+#
+# `group` drives the three zones on the landing page:
+#   Action    - the things you DO, the main grid
+#   Reference - what you look up rather than do, below a rule
+#   Also here - not part of anybody's job: phone screens, guides, support
 _ADMIN_TILES = [
-    ("Selling",           "selling",           "fa fa-shopping-cart", "#6b85a3"),
-    ("Buying",            "buying",            "fa fa-shopping-bag",  "#b08968"),
-    ("Stock",             "stock",             "fa fa-cubes",         "#82a085"),
-    ("Invoicing",         "invoicing",         "fa fa-file-text-o",   "#7a8aa0"),
-    ("Financial Reports", "financial-reports", "fa fa-bar-chart",     "#5b7a99"),
-    ("CRM",               "crm",               "fa fa-users",         "#9a7aa0"),
-    ("Customers",         "customer",          "fa fa-address-book",  "#9a7aa0"),
-    ("Manufacturing",     "manufacturing",     "fa fa-industry",      "#a08a6b"),
-    ("Assets",            "assets",            "fa fa-cube",          "#6b9a8a"),
-    ("Projects",          "projects",          "fa fa-tasks",         "#8a8a6b"),
-    ("Support",           "support",           "fa fa-life-ring",     "#a07a7a"),
-    ("Users",             "user",              "fa fa-user",          "#6b85a3"),
-    ("Website",           "website",           "fa fa-globe",         "#5b9aa0"),
-    ("Settings",          "erpnext-settings",  "fa fa-cog",           "#7a7a8a"),
-    ("Insights",          "insights",          "fa fa-line-chart",    "#5b7a99"),
-    ("Import from Kiln Sheet", "item-importer/new", "fa fa-upload",  "#b08968"),
-    ("Import Home/Fashion", "home-fashion-importer/new", "fa fa-upload", "#9a7aa0"),
+    ("Selling",           "selling",           "invoice",   "", "Quotations, orders and what they are worth",       "Action"),
+    ("Buying",            "buying",            "supplier",  "", "Purchase orders and what is on its way in",        "Action"),
+    ("Stock",             "stock",             "box",       "", "What you hold, where it is, and what moved",       "Action"),
+    ("Invoicing",         "invoicing",         "invoice",   "", "Raise invoices and see what is owed",              "Action"),
+    ("CRM",               "crm",               "customers", "", "Leads, opportunities and who to call next",        "Action"),
+    ("Manufacturing",     "manufacturing",     "settings",  "", "Works orders, BOMs and what to make",              "Action"),
+    ("Projects",          "projects",          "report",    "", "Jobs, tasks and what they have cost",              "Action"),
+    ("Support",           "support",           "guides",    "", "Tickets raised by your customers",                 "Action"),
+
+    ("Customers",         "customer",          "customers", "", "Who you sell to, and their terms",                 "Reference"),
+    ("Financial Reports", "financial-reports", "ledger",    "", "Trial balance, P&L and balance sheet",             "Reference"),
+    ("Insights",          "insights",          "ledger",    "", "Dashboards and your own reports",                  "Reference"),
+    ("Assets",            "assets",            "box",       "", "What the business owns and what it is worth",      "Reference"),
+    ("Users",             "user",              "customers", "", "Who can sign in, and what they may do",            "Reference"),
+    ("Website",           "website",           "launch",    "", "Your public site and web pages",                   "Reference"),
+    ("Settings",          "erpnext-settings",  "settings",  "", "Company, tax, naming and defaults",                "Reference"),
 ]
 
 # Additional standard tiles available in the library for role-specific layouts.
 # Created by ensure_standard_tiles() on install/migrate, never on the admin layout.
 _LIBRARY_TILES = [
-    ("Open POS",             "point-of-sale",             "fa fa-credit-card",   "#1E6A52"),
-    ("POS Closing",          "pos-closing-entry/new",     "fa fa-calculator",    "#6b85a3"),
-    ("Stock Transfer",       "stock-transfer/new",        "fa fa-truck",         "#1E6A52"),
-    ("Our Items",            "query-report/Stock Balance", "fa fa-cubes",        "#1E6A52"),
-    ("Sales Persons",        "sales-person",              "fa fa-users",         "#9a7aa0"),
-    ("New Sales Person",     "sales-person/new",          "fa fa-user-plus",     "#82a085"),
-    ("Sales Invoices",       "sales-invoice",             "fa fa-file-text-o",   "#5b7a99"),
-    ("Items",                "item",                      "fa fa-cubes",         "#1E6A52"),
-    ("New Item",             "item/new",                  "fa fa-plus-circle",   "#82a085"),
-    ("Import from Kiln Sheet", "kiln-sheet-importer",      "fa fa-upload",        "#b08968"),
-    ("Import Home/Fashion",  "home-fashion-importer",     "fa fa-upload",        "#9a7aa0"),
-    ("Manufacturers",        "manufacturer",              "fa fa-paint-brush",   "#9a7aa0"),
-    ("Item Attributes",      "item-attribute",            "fa fa-tags",          "#9a7aa0"),
-    ("Stock Entry",          "stock-entry/new",           "fa fa-exchange",      "#6b85a3"),
-    ("Stock Reconciliation", "stock-reconciliation/new",  "fa fa-tasks",         "#a08a6b"),
-    ("Stock Balance",        "query-report/Stock Balance", "fa fa-bar-chart",    "#5b7a99"),
+    ("Open POS",             "point-of-sale",              "pos",       "", "Open the till and take a sale",              "Action"),
+    ("POS Closing",          "pos-closing-entry/new",      "count",     "", "Cash up and close the till for the day",     "Action"),
+    ("Stock Transfer",       "stock-transfer/new",         "transfer",  "", "Move stock between warehouses",              "Action"),
+    ("Stock Entry",          "stock-entry/new",            "transfer",  "", "Receive, issue or move stock",               "Action"),
+    ("Stock Reconciliation", "stock-reconciliation/new",   "count",     "", "Correct quantities against a count",         "Action"),
+    ("New Item",             "item/new",                   "items",     "", "Add something you buy, make or sell",        "Action"),
+    ("Sales Invoices",       "sales-invoice",              "invoice",   "", "Invoices raised, and what is unpaid",        "Action"),
+    ("New Sales Person",     "sales-person/new",           "customers", "", "Add someone to the sales team",              "Action"),
+
+    ("Our Items",            "query-report/Stock Balance", "items",     "", "Everything you hold, with quantities",       "Reference"),
+    ("Items",                "item",                       "items",     "", "The full item list and its detail",          "Reference"),
+    ("Stock Balance",        "query-report/Stock Balance", "ledger",    "", "Quantity and value by item and warehouse",   "Reference"),
+    ("Manufacturers",        "manufacturer",               "settings",  "", "Who makes the things you sell",              "Reference"),
+    ("Item Attributes",      "item-attribute",             "items",     "", "Sizes, colours and the rest of the variants", "Reference"),
+    ("Sales Persons",        "sales-person",               "customers", "", "The sales team and their territories",       "Reference"),
+]
+
+# The bottom row. Gated at seed time on whether the page actually exists, so a
+# dead link never ships - a missing card reads as a feature this site does not
+# have, which is the truth.
+# (label, route, icon, colour, blurb, group, required_page)
+_ALSO_HERE_TILES = [
+    ("Mobile screens", "crm-mobile",    "pos",    "", "Scan, count and confirm on a phone or tablet", "Also here", "crm-mobile"),
+    ("Guides",         "nest-help",     "guides", "", "How to do each of these, step by step",        "Also here", "nest-help"),
 ]
 
 
@@ -69,11 +85,22 @@ def _doctypes_ready():
         return False
 
 
-def _ensure_tile(label, route, icon, color, sort_order, open_in_new_tab=0):
+def _ensure_tile(label, route, icon, color, sort_order, open_in_new_tab=0,
+                 blurb="", group="Action"):
     """Return the name of the library button with this label, creating it if
-    absent. Matching by label keeps re-runs from making duplicates."""
+    absent. Matching by label keeps re-runs from making duplicates.
+
+    On an existing tile the blurb and group are filled in only when they are
+    still blank, so an admin's own wording is never overwritten by a deploy."""
     name = frappe.db.get_value("Nest Home Gliphy Tile", {"label": label}, "name")
     if name:
+        patch = {}
+        if blurb and not frappe.db.get_value("Nest Home Gliphy Tile", name, "description"):
+            patch["description"] = blurb
+        if group and not frappe.db.get_value("Nest Home Gliphy Tile", name, "tile_group"):
+            patch["tile_group"] = group
+        for field, value in patch.items():
+            frappe.db.set_value("Nest Home Gliphy Tile", name, field, value)
         return name
     doc = frappe.get_doc({
         "doctype": "Nest Home Gliphy Tile",
@@ -82,6 +109,8 @@ def _ensure_tile(label, route, icon, color, sort_order, open_in_new_tab=0):
         "icon": icon,
         "color": color,
         "route": route,
+        "description": blurb,
+        "tile_group": group,
         "sort_order": sort_order,
         "open_in_new_tab": open_in_new_tab,
     })
@@ -103,8 +132,10 @@ def ensure_admin_layout():
             return
 
         tile_rows = []
-        for i, (label, route, icon, color) in enumerate(_ADMIN_TILES):
-            tile_rows.append({"tile": _ensure_tile(label, route, icon, color, i)})
+        for i, (label, route, icon, color, blurb, group) in enumerate(_ADMIN_TILES):
+            tile_rows.append({"tile": _ensure_tile(
+                label, route, icon, color, i, blurb=blurb, group=group
+            )})
 
         frappe.get_doc({
             "doctype": "Nest Home Gliphy Layout",
@@ -131,8 +162,20 @@ def ensure_standard_tiles():
     try:
         if not _doctypes_ready():
             return
-        for i, (label, route, icon, color) in enumerate(_LIBRARY_TILES):
-            _ensure_tile(label, route, icon, color, i + len(_ADMIN_TILES))
+        for i, (label, route, icon, color, blurb, group) in enumerate(_LIBRARY_TILES):
+            _ensure_tile(
+                label, route, icon, color, i + len(_ADMIN_TILES),
+                blurb=blurb, group=group,
+            )
+
+        # The bottom row, only where the page it points at is installed.
+        for j, (label, route, icon, color, blurb, group, page) in enumerate(_ALSO_HERE_TILES):
+            if page and not frappe.db.exists("Page", page):
+                continue
+            _ensure_tile(
+                label, route, icon, color,
+                900 + j, blurb=blurb, group=group,
+            )
         frappe.db.commit()
     except Exception:
         frappe.log_error(frappe.get_traceback(), "nest_home_gliphy.ensure_standard_tiles")
