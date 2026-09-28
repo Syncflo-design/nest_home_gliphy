@@ -19,8 +19,7 @@ Schema
     meta          : dict  source-specific extras (qty, amount, currency, ...)
 """
 
-import frappe
-from frappe.utils import getdate, nowdate, cint
+from frappe.utils import getdate, nowdate
 
 
 _PRIORITY_MAP = {

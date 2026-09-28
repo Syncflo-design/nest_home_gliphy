@@ -5,7 +5,6 @@ Resolution (role profile first, then role, highest priority wins) lives in
 nest_home_gliphy.api so both the page and the landing redirect share one source.
 """
 
-import frappe
 from frappe.model.document import Document
 
 

@@ -1,11 +1,10 @@
 {
  "actions": [],
- "autoname": "naming_series:",
+ "autoname": "Prompt",
  "creation": "2026-05-20 00:00:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "naming_series",
   "label",
   "enabled",
   "column_break_1",
@@ -22,16 +21,6 @@
   "sort_order"
  ],
  "fields": [
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Series",
-   "options": "NEST-TILE-.####",
-   "default": "NEST-TILE-.####",
-   "hidden": 1,
-   "no_copy": 1,
-   "print_hide": 1
-  },
   {
    "fieldname": "label",
    "fieldtype": "Data",
