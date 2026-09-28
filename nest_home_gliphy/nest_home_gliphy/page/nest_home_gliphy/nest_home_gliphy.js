@@ -66,7 +66,8 @@ var NH_CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
 // change and nothing to re-enter on the records.
 var NH_ICONS = [
 	'pos', 'transfer', 'invoice', 'customers', 'items', 'box', 'ledger',
-	'report', 'count', 'supplier', 'guides', 'calendar', 'settings', 'launch'
+	'report', 'count', 'supplier', 'guides', 'calendar', 'settings', 'launch',
+	'phone', 'cart'
 ];
 
 var NH_ICON_PATH = '/assets/nest_home_gliphy/images/icons/';

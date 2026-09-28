@@ -26,22 +26,20 @@ ADMIN_LAYOUT_NAME = "Administrator"
 #   Reference - what you look up rather than do, below a rule
 #   Also here - not part of anybody's job: phone screens, guides, support
 _ADMIN_TILES = [
-    ("Selling",           "selling",           "invoice",   "", "Quotations, orders and what they are worth",       "Action"),
-    ("Buying",            "buying",            "supplier",  "", "Purchase orders and what is on its way in",        "Action"),
-    ("Stock",             "stock",             "box",       "", "What you hold, where it is, and what moved",       "Action"),
-    ("Invoicing",         "invoicing",         "invoice",   "", "Raise invoices and see what is owed",              "Action"),
-    ("CRM",               "crm",               "customers", "", "Leads, opportunities and who to call next",        "Action"),
-    ("Manufacturing",     "manufacturing",     "settings",  "", "Works orders, BOMs and what to make",              "Action"),
-    ("Projects",          "projects",          "report",    "", "Jobs, tasks and what they have cost",              "Action"),
-    ("Support",           "support",           "guides",    "", "Tickets raised by your customers",                 "Action"),
+    # CRM is Frappe CRM at /crm, not the ERPNext CRM workspace - that one is
+    # being deprecated. It is a separate app, so the route is an absolute path
+    # and the page opens it with a real page load, not a desk route.
+    ("CRM",              "/crm",          "customers", "", "Leads, deals and who to call next",                  "Action"),
+    ("Buying",           "buying",        "supplier",  "", "Raise a purchase order, receive it in, and your suppliers", "Action"),
+    ("Selling",          "selling",       "cart",      "", "Sales orders, picking, invoicing and your customers", "Action"),
+    ("Projects",         "projects",      "report",    "", "Jobs, tasks, timesheets and what they have cost",     "Action"),
+    # Works orders and job cards live here, not under Selling: a job card is a
+    # shop-floor operation and means nothing from a sales seat. BOMs too.
+    ("Manufacturing",    "manufacturing", "settings",  "", "Works orders, job cards, production plans and BOMs",  "Action"),
+    ("Stock Management", "stock",         "box",       "", "Transfers, reconciliations, ledger and balances",     "Action"),
+    ("Reporting",        "/insights",     "ledger",    "", "Dashboards, charts and your own reports",             "Action"),
 
-    ("Customers",         "customer",          "customers", "", "Who you sell to, and their terms",                 "Reference"),
-    ("Financial Reports", "financial-reports", "ledger",    "", "Trial balance, P&L and balance sheet",             "Reference"),
-    ("Insights",          "insights",          "ledger",    "", "Dashboards and your own reports",                  "Reference"),
-    ("Assets",            "assets",            "box",       "", "What the business owns and what it is worth",      "Reference"),
-    ("Users",             "user",              "customers", "", "Who can sign in, and what they may do",            "Reference"),
-    ("Website",           "website",           "launch",    "", "Your public site and web pages",                   "Reference"),
-    ("Settings",          "erpnext-settings",  "settings",  "", "Company, tax, naming and defaults",                "Reference"),
+    ("Items",            "item",          "items",     "", "Everything you buy, make or sell",                    "Reference"),
 ]
 
 # Additional standard tiles available in the library for role-specific layouts.
@@ -54,24 +52,42 @@ _LIBRARY_TILES = [
     ("Stock Reconciliation", "stock-reconciliation/new",   "count",     "", "Correct quantities against a count",         "Action"),
     ("New Item",             "item/new",                   "items",     "", "Add something you buy, make or sell",        "Action"),
     ("Sales Invoices",       "sales-invoice",              "invoice",   "", "Invoices raised, and what is unpaid",        "Action"),
+    ("Invoicing",            "invoicing",                  "invoice",   "", "Raise invoices and see what is owed",        "Action"),
     ("New Sales Person",     "sales-person/new",           "customers", "", "Add someone to the sales team",              "Action"),
 
+    ("Customers",            "customer",                   "customers", "", "Who you sell to, and their terms",           "Reference"),
+    ("Suppliers",            "supplier",                   "supplier",  "", "Who you buy from, and their terms",          "Reference"),
+    ("BOMs",                 "bom",                        "report",    "", "What each product is made of",               "Reference"),
     ("Our Items",            "query-report/Stock Balance", "items",     "", "Everything you hold, with quantities",       "Reference"),
-    ("Items",                "item",                       "items",     "", "The full item list and its detail",          "Reference"),
     ("Stock Balance",        "query-report/Stock Balance", "ledger",    "", "Quantity and value by item and warehouse",   "Reference"),
     ("Manufacturers",        "manufacturer",               "settings",  "", "Who makes the things you sell",              "Reference"),
     ("Item Attributes",      "item-attribute",             "items",     "", "Sizes, colours and the rest of the variants", "Reference"),
     ("Sales Persons",        "sales-person",               "customers", "", "The sales team and their territories",       "Reference"),
+    ("Assets",               "assets",                     "box",       "", "What the business owns and what it is worth", "Reference"),
+    ("Users",                "user",                       "customers", "", "Who can sign in, and what they may do",      "Reference"),
+    ("Settings",             "erpnext-settings",           "settings",  "", "Company, tax, naming and defaults",          "Reference"),
 ]
 
-# The bottom row. Gated at seed time on whether the page actually exists, so a
-# dead link never ships - a missing card reads as a feature this site does not
-# have, which is the truth.
-# (label, route, icon, colour, blurb, group, required_page)
+# The bottom row. Gated at seed time on whether the thing it points at actually
+# exists, so a dead link never ships - a missing card reads as a feature this
+# site does not have, which is the truth.
+#
+# The gate is a Page name, or "doctype:X" where the target is a portal route
+# rather than a desk Page (Frappe Helpdesk ships no Page record).
+# (label, route, icon, colour, blurb, group, gate)
 _ALSO_HERE_TILES = [
-    ("Mobile screens", "crm-mobile",    "pos",    "", "Scan, count and confirm on a phone or tablet", "Also here", "crm-mobile"),
-    ("Guides",         "nest-help",     "guides", "", "How to do each of these, step by step",        "Also here", "nest-help"),
+    ("Mobile screens",       "crm-mobile",              "phone",  "", "Scan, count and confirm on a phone or tablet", "Also here", "crm-mobile"),
+    ("Log a support ticket", "/helpdesk/tickets/new",   "guides", "", "Ask a question, or tell us something is wrong", "Also here", "doctype:HD Ticket"),
 ]
+
+
+def _gate_passes(gate):
+    """True when the thing a bottom-row tile points at exists on this site."""
+    if not gate:
+        return True
+    if gate.startswith("doctype:"):
+        return bool(frappe.db.exists("DocType", gate.split(":", 1)[1]))
+    return bool(frappe.db.exists("Page", gate))
 
 
 def _doctypes_ready():
@@ -141,7 +157,7 @@ def ensure_admin_layout():
         # and the guides exist in the library and appear nowhere. Still gated on
         # the page being installed, so a dead card never ships.
         for j, (label, route, icon, color, blurb, group, page) in enumerate(_ALSO_HERE_TILES):
-            if page and not frappe.db.exists("Page", page):
+            if not _gate_passes(page):
                 continue
             tile_rows.append({"tile": _ensure_tile(
                 label, route, icon, color, 900 + j, blurb=blurb, group=group
@@ -180,7 +196,7 @@ def ensure_standard_tiles():
 
         # The bottom row, only where the page it points at is installed.
         for j, (label, route, icon, color, blurb, group, page) in enumerate(_ALSO_HERE_TILES):
-            if page and not frappe.db.exists("Page", page):
+            if not _gate_passes(page):
                 continue
             _ensure_tile(
                 label, route, icon, color,
