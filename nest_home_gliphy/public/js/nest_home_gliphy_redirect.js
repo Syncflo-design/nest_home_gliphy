@@ -14,14 +14,28 @@ frappe.provide("nest_home_gliphy");
 		return frappe.boot && frappe.boot.nest_home_gliphy_landing;
 	}
 
+	// Routes that mean "take me home". The empty route is the desk's own
+	// landing; "home" is the Home workspace, which is what the sidebar's Home
+	// entry and the house icon actually point at.
+	function is_home_route(r) {
+		if (!r || !r.length) return true;
+		if (r.length === 1) {
+			var first = (r[0] || "").toString().toLowerCase();
+			return first === "" || first === "home" || first === "workspace";
+		}
+		// ["Workspaces", "Home"] on some v16 builds.
+		if (r.length === 2 && (r[0] || "").toString().toLowerCase() === "workspaces") {
+			return (r[1] || "").toString().toLowerCase() === "home";
+		}
+		return false;
+	}
+
 	function redirect_if_home() {
 		try {
 			var t = target();
 			if (!t) return;
 			var r = frappe.get_route() || [];
-			// Empty route == the desk's home landing.
-			var is_home = r.length === 0 || (r.length === 1 && (r[0] === "" || r[0] == null));
-			if (is_home && (r[0] || "") !== t) {
+			if (is_home_route(r) && (r[0] || "") !== t) {
 				frappe.set_route(t);
 			}
 		} catch (e) {

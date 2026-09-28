@@ -32,14 +32,17 @@ _ADMIN_TILES = [
     ("CRM",              "/crm",          "customers", "", "Leads, deals and who to call next",                  "Action"),
     ("Buying",           "buying",        "supplier",  "", "Raise a purchase order, receive it in, and your suppliers", "Action"),
     ("Selling",          "selling",       "cart",      "", "Sales orders, picking, invoicing and your customers", "Action"),
-    ("Projects",         "projects",      "report",    "", "Jobs, tasks, timesheets and what they have cost",     "Action"),
+    # Production Plan is the screen that does this: it pulls demand from open
+    # sales orders and material requests and explodes it through the BOMs into
+    # what to make and what to buy.
+    ("Planning",         "production-plan", "calendar", "", "Item demand from orders, exploded through the BOMs",  "Action"),
     # Works orders and job cards live here, not under Selling: a job card is a
     # shop-floor operation and means nothing from a sales seat. BOMs too.
     ("Manufacturing",    "manufacturing", "settings",  "", "Works orders, job cards, production plans and BOMs",  "Action"),
+    ("Quality",          "quality",       "count",     "", "Inspections, specifications and procedures",          "Action"),
     ("Stock Management", "stock",         "box",       "", "Transfers, reconciliations, ledger and balances",     "Action"),
+    ("Projects",         "projects",      "report",    "", "Jobs, tasks, timesheets and what they have cost",     "Action"),
     ("Reporting",        "/insights",     "ledger",    "", "Dashboards, charts and your own reports",             "Action"),
-
-    ("Items",            "item",          "items",     "", "Everything you buy, make or sell",                    "Reference"),
 ]
 
 # Additional standard tiles available in the library for role-specific layouts.
@@ -75,6 +78,10 @@ _LIBRARY_TILES = [
 # The gate is a Page name, or "doctype:X" where the target is a portal route
 # rather than a desk Page (Frappe Helpdesk ships no Page record).
 # (label, route, icon, colour, blurb, group, gate)
+# Tiles that open in their own tab. CRM is a separate app with its own UI;
+# clicking it should not take the desk away from you.
+_NEW_TAB_LABELS = {"CRM"}
+
 _ALSO_HERE_TILES = [
     ("Mobile screens",       "crm-mobile",              "phone",  "", "Scan, count and confirm on a phone or tablet", "Also here", "crm-mobile"),
     ("Log a support ticket", "/helpdesk/tickets/new",   "guides", "", "Ask a question, or tell us something is wrong", "Also here", "doctype:HD Ticket"),
@@ -150,7 +157,8 @@ def ensure_admin_layout():
         tile_rows = []
         for i, (label, route, icon, color, blurb, group) in enumerate(_ADMIN_TILES):
             tile_rows.append({"tile": _ensure_tile(
-                label, route, icon, color, i, blurb=blurb, group=group
+                label, route, icon, color, i, blurb=blurb, group=group,
+                open_in_new_tab=1 if label in _NEW_TAB_LABELS else 0,
             )})
 
         # The bottom row belongs on the default layout too, or the phone screens
@@ -160,7 +168,8 @@ def ensure_admin_layout():
             if not _gate_passes(page):
                 continue
             tile_rows.append({"tile": _ensure_tile(
-                label, route, icon, color, 900 + j, blurb=blurb, group=group
+                label, route, icon, color, 900 + j, blurb=blurb, group=group,
+                open_in_new_tab=1 if label in _NEW_TAB_LABELS else 0,
             )})
 
         frappe.get_doc({
