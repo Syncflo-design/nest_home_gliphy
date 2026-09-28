@@ -1,4 +1,4 @@
-﻿// nest_home_gliphy — role-based, branded landing page (push, not pull).
+// nest_home_gliphy — role-based, branded landing page (push, not pull).
 // Built as a desk Page (not listview hooks) per CoWork_Helper gotchas
 // 2026-05-11. Mounts inside page.body (jQuery in v16) per 2026-05-10.
 // HTML is assembled as string arrays joined with "\n" (page-bundle rule).
