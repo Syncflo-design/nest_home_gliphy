@@ -122,3 +122,14 @@ role_home_page still covers managers. Record the answer here after smoke test.
   prices; this override stops it recurring for anything else.
 - **Deploy**: bundles with the pending `nest_help` v0.0.2 POS-crash shim. Push →
   Frappe Cloud bench `Ardmore_KZN` → Pull Updates → **fresh Deploy** (asset+code).
+
+## v0.3.1 — 2026-10-07: sidebar Home row, desk JS as a bundle
+
+- Frappe 16.50 dropped the top navbar (and its home link). `public/js/nest_home_gliphy.bundle.js`
+  adds a **Home** row at the top of the sidebar's standard band (above Search / Notification) by
+  wrapping `frappe.ui.Sidebar.add_standard_items`; it routes to the user's Gliphy landing. Only
+  shown when a layout matches the user. Not on the dock: the dock only appears for apps that opt in.
+- The desk script (home redirect + Home row) is now a fingerprinted `.bundle.js`
+  (`app_include_js = ["nest_home_gliphy.bundle.js"]`). The old plain
+  `/assets/.../nest_home_gliphy_redirect.js` was served from browser cache after deploys.
+  Needs a fresh Deploy (bench build).

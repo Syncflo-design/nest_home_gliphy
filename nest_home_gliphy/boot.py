@@ -74,7 +74,7 @@ def _resolve_landing(user):
 
 def boot_session(bootinfo):
     """Publish this user's resolved landing route to the desk so the
-    client-side redirect (nest_home_gliphy_redirect.js) can act on it. Set only when
+    client-side redirect (nest_home_gliphy.bundle.js) can act on it. Set only when
     a layout matches the user (or they have an explicit preference); left
     unset otherwise, so those users simply stay on the standard desk."""
     try:

@@ -61,8 +61,9 @@ fixtures = [
     },
 ]
 
-# No global desk bundle — the page loads its own CSS via a <link> tag.
-app_include_js  = ["/assets/nest_home_gliphy/js/nest_home_gliphy_redirect.js"]
+# Desk-wide JS (home redirect + sidebar Home row) as a fingerprinted bundle, so a deploy
+# is never hidden behind a browser-cached copy. The page loads its own CSS via a <link> tag.
+app_include_js  = ["nest_home_gliphy.bundle.js"]
 app_include_css = []
 
 # ---------------------------------------------------------------------------
