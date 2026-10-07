@@ -30,12 +30,25 @@ frappe.provide("nest_home_gliphy");
 		return false;
 	}
 
-	function redirect_if_home() {
+	// The desk route as it stands in the address bar: /desk/<route> (or /app/<route>).
+	function path_route() {
+		var p = (window.location.pathname || "").replace(/^\/(desk|app)(\/|$)/, "").replace(/\/+$/, "");
+		return p ? p.split("/").map(decodeURIComponent) : [];
+	}
+
+	// from_router: called on a router change, when frappe.get_route() is settled.
+	// Otherwise (first load), judge by the address bar: the router may not have
+	// parsed it yet, and its empty route would wrongly read as "home", bouncing
+	// every typed or linked deep link (e.g. /desk/project) to the landing page.
+	function redirect_if_home(from_router) {
 		try {
 			var t = target();
 			if (!t) return;
 			var r = frappe.get_route() || [];
-			if (is_home_route(r) && (r[0] || "") !== t) {
+			var home = from_router === true
+				? is_home_route(r)
+				: is_home_route(path_route()) && (!r.length || is_home_route(r));
+			if (home && (r[0] || "") !== t) {
 				frappe.set_route(t);
 			}
 		} catch (e) {
@@ -43,10 +56,13 @@ frappe.provide("nest_home_gliphy");
 		}
 	}
 
+	var bound = false;
 	function bind_router() {
+		if (bound) return true;
 		if (frappe.router && frappe.router.on) {
 			// Fires on every route change — catches the Home/house button.
-			frappe.router.on("change", redirect_if_home);
+			frappe.router.on("change", function () { redirect_if_home(true); });
+			bound = true;
 			return true;
 		}
 		return false;
